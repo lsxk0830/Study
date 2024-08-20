@@ -8,6 +8,7 @@
 
 /Unity/.vs
 /Unity/.vscode
+/Unity/.vsconfig
 
 *.sln
 *.csproj
