@@ -2,18 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class TreeNode
-{
-    public int value;
-    public TreeNode leftChild;
-    public TreeNode rightChild;
-
-    public TreeNode(int v)
-    {
-        value = v;
-    }
-}
-
 public class BinaryTree : MonoBehaviour
 {
     private TreeNode startNode;
