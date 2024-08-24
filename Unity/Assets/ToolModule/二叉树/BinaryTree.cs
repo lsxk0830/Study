@@ -122,7 +122,7 @@ public class BinaryTree : MonoBehaviour
         }
     }
 
-    //中序遍历 左右中  递归
+    //后序遍历 左右中  递归
     public void PostOrder(TreeNode node)
     {
         if (node != null)
