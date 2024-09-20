@@ -11,7 +11,7 @@ namespace Tool
 	///  通过设置标志位来记录此次遍历有无数据交换，进而可以判断是否要继续循环，设置一个flag标记，
 	///  当在一趟序列中没有发生交换，则该序列已排序好，但优化后排序的时间复杂度没有发生量级的改变
 	/// </summary>
-	public class 冒泡排序改进_A : MonoBehaviour
+	public class 冒泡排序_flag标记 : MonoBehaviour
 	{
 		private List<int> numList = new List<int>() { 9, 7, 8, 6, 5, 4, 3, 2, 1, 0 };
 		private int count = 0;
