@@ -4,6 +4,7 @@ using UnityEngine;
 namespace Tool
 {
 	/// <summary>
+	/// 【实现逻辑】
 	/// 依次比较相邻的两个元素，进行交换
 	/// 循环冒泡，次数为数据个数-1
 	/// </summary>
