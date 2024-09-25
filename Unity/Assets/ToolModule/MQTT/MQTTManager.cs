@@ -32,23 +32,42 @@ namespace MQTT
         public bool ConnectionStatus => Client == null ? false : Client.IsConnect;
 
         private Dictionary<MessageCode, Action<MQTTDataReceive>> msgCodeListenerDic =
-            new Dictionary<MessageCode, Action<MQTTDataReceive>>();
+            new Dictionary<MessageCode, Action<MQTTDataReceive>>(); // 消息针对MessageCode分类，用于分发消息
 
         private ConcurrentDictionary<MessageCode, ConcurrentQueue<MQTTDataReceive>> ProcessedMsgQueueByMsgCode =
             new ConcurrentDictionary<MessageCode, ConcurrentQueue<MQTTDataReceive>>(); // 处理后的消息队列
 
         private ConcurrentQueue<string> ReceiveOriginalMsgQueue = new ConcurrentQueue<string>(); // 源消息队列
 
-        private const int MsgHandleTaskCount = 6;
-        private List<Task> msgHandlerTaskList = new List<Task>();
+        private const int MAXMsgHandleTaskCount = 6; // 最多同时处理消息的Task数量
+        private List<Task> msgHandlerTaskList = new List<Task>(); // 消息处理Task列表
         private HashSet<string> subscribeTopicHashSet = new HashSet<string>();
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(string ip, int port, string username, string password)
         {
-            Init();
+            if (ConnectionStatus) return;
+
+            if (activeMQTT == null)
+            {
+                GameObject go = new GameObject("ActiveMQTT");
+                go.AddComponent<ActiveMQTT>();
+                GameObject.DontDestroyOnLoad(go);
+            }
+
+            Debug.Log($"UserName:{username},Password:{password},IP:{ip},Port:{port}");
 
             if (Client == null)
                 Client = string.IsNullOrEmpty(username) ? new MQTTClient(ip, port) : new MQTTClient(ip, port, username, password);
+
+            if (Client != null && !Client.IsConnect)
+                await Client.ConnectAsync();
+
+            CanReceive(true);
+        }
+
+        public async Task ConnectAsync()
+        {
+            if (ConnectionStatus) return;
 
             if (Client != null && !Client.IsConnect)
                 await Client.ConnectAsync();
@@ -115,50 +134,26 @@ namespace MQTT
             subscribeTopicHashSet.Clear();
         }
 
+        /// <summary>
+        /// 断开连接后的重置
+        /// </summary>
+        public void Reset()
+        {
+            subscribeTopicHashSet.Clear();
+        }
+
         #endregion 消息监听
 
-        public async Task SendMessageAsync(string topic, string sendData)
+        public async Task SendMessageAsync(string topic, string sendMsg)
         {
             if (Client == null || !Client.IsConnect || !IsCanRecv) return;
-            await Client.Publish(topic, sendData);
+            await Client.Publish(topic, sendMsg);
         }
 
         #region 内部代码
 
-        private string ip;
-        private int port;
-        private string username;
-        private string password;
         private bool isCanRecv = false;
         private ActiveMQTT activeMQTT;
-
-        private void Init()
-        {
-            if (Client != null) return;
-
-            if (activeMQTT == null)
-            {
-                GameObject go = new GameObject("ActiveMQTT");
-                go.AddComponent<ActiveMQTT>();
-                GameObject.DontDestroyOnLoad(go);
-            }
-            XmlDocument xmlDoc = new XmlDocument();
-            xmlDoc.Load(Application.streamingAssetsPath + "/MqttConfig.xml");
-            XmlNode root = xmlDoc.DocumentElement;
-            XmlNode ip = root.SelectSingleNode("ip");
-            XmlNode port = root.SelectSingleNode("port");
-            XmlNode passworld = root.SelectSingleNode("passworld");
-            string NowUsername = string.Empty;
-
-            XmlNode username = root.SelectSingleNode("username1");
-
-            if (string.IsNullOrEmpty(ip.InnerText) || string.IsNullOrEmpty(port.InnerText)) return;
-
-            if (username.InnerText != "null" && passworld.InnerText != "null")
-                SetCredential(username.InnerText, passworld.InnerText);
-            SetIpAddress(ip.InnerText, int.Parse(port.InnerText));
-            Debug.Log($"UserName:{username.InnerText},Password:{passworld.InnerText},IP:{ip.InnerText},Port:{port.InnerText}");
-        }
 
         private void CanReceive(bool canRecv)
         {
@@ -185,7 +180,7 @@ namespace MQTT
             }
             cancellationTokenSource = new CancellationTokenSource();
             msgHandlerTaskList.Clear();
-            for (int i = 0; i < MsgHandleTaskCount; i++)
+            for (int i = 0; i < MAXMsgHandleTaskCount; i++)
                 msgHandlerTaskList.Add(Task.Run(() => AcceptMsgHandler(cancellationTokenSource.Token)));
         }
 
@@ -283,22 +278,8 @@ namespace MQTT
             ProcessedMsgQueueByMsgCode.Clear();
         }
 
-        private void SetIpAddress(string ip, int port)
-        {
-            this.ip = ip;
-            this.port = port;
-        }
-
-        private void SetCredential(string username, string password)
-        {
-            this.username = username;
-            this.password = password;
-        }
-
         public class ActiveMQTT : MonoBehaviour
         {
-            private int count = 0;
-
             private void FixedUpdate()
             {
                 foreach (var processedMsgQueue in Instance.ProcessedMsgQueueByMsgCode)

@@ -28,7 +28,7 @@ namespace MQTT
                 .Build();
             _mqttClient = new MqttFactory().CreateMqttClient();
             _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
-            _mqttClient.DisconnectedAsync += MqttClient_DisconnectedAsync;
+            _mqttClient.DisconnectedAsync += MqttClient_Disconnected;
             _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
         }
 
@@ -47,7 +47,7 @@ namespace MQTT
             _mqttClient = new MqttFactory().CreateMqttClient();
             _mqttClient.ApplicationMessageReceivedAsync += MqttClient_ApplicationMessageReceivedAsync;
             _mqttClient.ConnectedAsync += MqttClient_ConnectedAsync;
-            _mqttClient.DisconnectedAsync += MqttClient_DisconnectedAsync;
+            _mqttClient.DisconnectedAsync += MqttClient_Disconnected;
         }
 
         private Task MqttClient_ConnectedAsync(MqttClientConnectedEventArgs args)
@@ -56,17 +56,18 @@ namespace MQTT
             return Task.CompletedTask;
         }
 
-        private async Task MqttClient_DisconnectedAsync(MqttClientDisconnectedEventArgs args)
+        private Task MqttClient_Disconnected(MqttClientDisconnectedEventArgs args)
         {
             try
             {
                 Debug.Log("MQTT==>Disconnected");
-                await _mqttClient.ConnectAsync(_options);
+                MQTTManager.Instance.Reset();
             }
             catch (Exception e)
             {
                 Debug.Log($"MQTT重连失败{e}");
             }
+            return Task.CompletedTask;
         }
 
         private async Task MqttClient_ApplicationMessageReceivedAsync(MqttApplicationMessageReceivedEventArgs arg)
