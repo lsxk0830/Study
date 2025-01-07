@@ -257,3 +257,419 @@ select * from study01;
 - unsigned
 
 ![](Texture/数据库小数类型.png)
+
+#### 无参数控制
+
+```
+create table studyf1 (f1 float,f2 double);
+desc studyf1;
+insert into studyf1 (f1,f2) values (-12.123,-1234.5678);
+select * from studyf1;
+```
+
+![image-20250107142240727](Texture/小数类型无参数控制.png)
+
+![](Texture/小数类型设计.png)
+
+![](Texture/小数类型插入参数.png)
+
+#### 有参数控制1
+
+```
+create table studyf2 (f1 float(5,2),f2 double(6,3) zerofill);
+desc studyf2;
+insert into studyf2 (f1,f2) values (12.34,12.34);
+insert into studyf2 (f1,f2) values (1.1,1.2);
+insert into studyf2 (f1,f2) values (123.45,123.456);
+insert into studyf2 (f1,f2) values (123.456,123.456);
+/*科学计数法(E)，小数点移动几位。*/
+insert into studyf2 (f1,f2) values (0.1234E2,0.123456E3);
+/*插入多了，就会四舍五入。*/
+insert into studyf2 (f1,f2) values (12.126,12.34);
+select * from studyf2;
+```
+
+![](Texture/小数插入.png)
+
+![](Texture/小数类型插入具体.png)
+
+#### 有参数控制2
+
+```
+create table studyf3 (f1 float(10,4) unsigned zerofill);
+desc studyf3;
+insert into studyf3 (f1) values (12.345);
+insert into studyf3 (f1) values (12.3456);
+insert into studyf3 (f1) values (12.34567);
+select * from studyf3;
+```
+
+![](Texture/有参数小数.png)
+
+### 日期类型
+
+![](Texture/日期类型.png)
+
+#### datetime(年月日时分秒)
+
+```
+create table studyd1 (mydate datetime);
+insert into studyd1 (mydate) values ('20200902230130');
+insert into studyd1 (mydate) values (20200902230130);
+insert into studyd1 (mydate) values ('2020-09-02 23:01:30');
+insert into studyd1 (mydate) values (null);
+select * from studyd1;
+```
+
+![](Texture/插入日期.png)
+
+![](Texture/插入日期2.png)
+
+#### timestamp(年月日时分秒/整数)
+
+```
+create table studyd2 (mytime timestamp);
+insert into studyd2 (mytime) values ('20200902230130');
+insert into studyd2 (mytime) values ('2020-09-02 23:01:30');
+select * from studyd2;
+/*+0 查看时间戳，显示整数。*/
+select mytime+0 from studyd2;
+```
+
+![](Texture/时间戳.png)
+
+#### date(年月日)
+
+```
+create table studyd3 (mydate date);
+insert into studyd3 (mydate) values ('20200902');
+insert into studyd3 (mydate) values ('2020-09-02');
+select * from studyd3;
+```
+
+![](Texture/date.png)
+
+![](Texture/date数据.png)
+
+#### time(时分秒)
+
+```
+create table studyd4 (mytime time);
+insert into studyd4 (mytime) values ('10:10:10');
+/*D HH:MM:SS，D代表天，最大可以是34天，代表过去多少时间。*/
+insert into studyd4 (mytime) values ('5 10:10:10');
+select * from studyd4;
+```
+
+#### year
+
+```
+create table studyd5 (myyear year);
+insert into studyd5 (myyear) values ('2020');
+insert into studyd5 (myyear) values ('2021');
+select * from studyd5;
+```
+
+### 字符类型
+
+![](Texture/字符类型.png)
+
+#### char(M)
+
+M表示字符固定长度，最大为255字节
+
+```
+create table studyz1 (mychar char(255));
+insert into studyz1 (mychar) values ('YES');
+insert into studyz1 (mychar) values ('NO');
+insert into studyz1 (mychar) values ('Y ');
+insert into studyz1 (mychar) values (' N');
+select * from studyz1;
+// 从 studyz1 表中查询 mychar 列的内容，并且使用 LENGTH 函数来计算 mychar 中每个字符串的长度
+select mychar,length(mychar) `length` from studyz1;
+```
+
+![](Texture/char.png)
+
+![](Texture/char2.png)
+
+#### varchar(M)
+
+M表示字符可变长度，最大65535字节，需要1-2字节来保存信息，超过255的长度就用2个字节来保存。
+
+utf8：一个字符占用3个字节 65535/3=21845 -1 -2=21844/21843
+
+gbk：一个字符占用2个字节 65535/2=32767 -1 -2=32766/32765
+
+最大长度是受最大65535字节和所使用的字符集有关
+
+```
+create table studyz2 (myvarchar varchar(21844));
+insert into studyz2 (myvarchar) values ('YES');
+insert into studyz2 (myvarchar) values ('NO');
+insert into studyz2 (myvarchar) values ('Y ');
+insert into studyz2 (myvarchar) values (' N');
+select * from studyz2;
+//从 studyz2 表中选择 myvarchar 列，并计算 myvarchar 列中每个字符串的长度，结果以 length 列的形式返回
+select myvarchar,length(myvarchar) `length` from studyz2;
+```
+
+![](Texture/Varchar.png)
+
+#### text
+
+**text和blob区别：blob用来保存二进制数据，text保存字符数据。**
+
+**text和char/varchar区别：text不需要指定长度。**
+
+存储长度：1字节-4GB
+
+```
+create table text1 (id int,name tinytext);
+create table text2 (id int,name text);
+create table text3 (id int,name mediumtext);
+/*longtext：最大4GB，4字节开销。*/
+create table text4 (id int,name longtext);
+```
+
+|    类型    | 说明                                                         |
+| :--------: | :----------------------------------------------------------- |
+|  tinytext  | 最大256 bytes，1字节开销，少于255个字符的，就比较好，比如：文章摘要 |
+|    text    | 最大64k，相当于65535个字符，2字节开销，比如：文章正文        |
+| mediumtext | 最大16MB，相当于16777215个字符，3字节开销，存储相对大的文本数据，比如书籍文本，白皮书 |
+|  longtext  | 最大4GB，4字节开销                                           |
+
+#### blob
+
+```
+create table blob1 (id int,name tinyblob);
+create table blob2 (id int,name blob);
+create table blob3 (id int,name mediumblob);
+create table blob4 (id int,name longblob);
+```
+
+|    类型    | 说明          |
+| :--------: | :------------ |
+|  tinyblob  | 最大256 bytes |
+|    blob    | 最大64k       |
+| mediumblob | 最大16MB      |
+|  longblob  | 最大4GB       |
+
+#### enum相于单项选择题
+
+最多65535个枚举项，2字节开销，相于单项选择题。
+
+```
+create table studye1 (myenum enum('Y','N'));
+insert into studye1 (myenum) values ('Y');
+insert into studye1 (myenum) values ('N');
+insert into studye1 (myenum) values ('1');
+insert into studye1 (myenum) values ('2');
+select * from studye1;
+select myenum+0 from studye1;
+```
+
+#### set相当于多项选择题。
+
+```
+create table studys1 (myset set('A','B','C','D'));
+insert into studys1 values ('A');
+insert into studys1 values ('A,B');
+insert into studys1 values ('C');
+insert into studys1 values ('C,D');
+select * from studys1;
+```
+
+## **表的创建及管理**
+
+### 创建表
+
+需要信息：表名，表字段名，表字段的定义
+
+create table table_name 列定义 选项;
+
+create table table_name like old_table_name; --like:包括旧表的结构+信息+索引
+
+create table table_name select * from old_table_name; --包括旧表的结构+信息
+
+```c#
+create table studyt1
+(
+    id int(20) unsigned auto_increment not null,
+    name varchar(20) not null,
+    jobdate date,
+    primary key (id)
+) engine=innodb default charset=utf8;
+
+show create table studyt1;
+```
+
+![](Texture/创建表.png)
+
+### 查询表
+
+```
+//列出当前选定数据库中的所有表
+show tables;
+```
+
+![](Texture/查询表1.png)
+
+```
+//列出名为 study_db 的数据库中的所有表
+show tables from study_db;
+```
+
+![](Texture/查询表2.png)
+
+```
+//列出当前选定数据库中所有以 'te' 开头的表名
+show tables like 'te%';
+```
+
+![](Texture/查询表3.png)
+
+```
+//列出 study_db 数据库中所有以 'te' 开头的表名
+show tables from study_db like 'te%';
+```
+
+![](Texture/查询表4.png)
+
+### 查看表内容
+
+```
+select * from study01;
+```
+
+![](Texture/查询表内容1.png)
+
+```
+//从名为 test 的数据库中的 study01 表中选择所有列的数据
+select * from study_db.study01;
+```
+
+![](Texture/查询表内容2.png)
+
+```
+//从名为 study_db 的数据库中的 study01 表中选择 id01 和 id02 这两列的数据，并限制返回的结果为最多 2 行
+select id01,id02 from study_db.study01 limit 2;
+```
+
+![](Texture/查询表内容3.png)
+
+### 表的增删改查
+
+#### 查数据库是否是自动commit
+
+```
+//用于检查 MySQL 数据库中自动提交设置的有用命令
+show variables like '%autocommit%';
+```
+
+![](Texture/是否自动commit.png)
+
+表示当前会话的自动提交功能是开启的
+
+#### 测试表和数据
+
+```
+create table study11 (id int(3),name varchar(12),sex varchar(6));
+create table study12 (id int(3),name varchar(12),age int(5));
+
+insert into study11 (id,name,sex) values 
+(1,'study01','男'),
+(2,'study02','男'),
+(3,'study03','女'),
+(4,'study04','女'),
+(5,'study05','女');
+
+insert into study12 (id,name,age) values 
+(1,'study01',20),
+(2,'study02',21),
+(3,'study03',18),
+(4,'study04',19),
+(5,'study05',28);
+```
+
+![](Texture/测试表和数据.png)
+
+#### insert
+
+语法：insert into table_name (表字段) values (值列表);
+
+```c#
+/*方法1*/
+insert into study11 (id,name,sex) values (6,'study06','男');/*方法2*/
+insert into study11 values (7,'study07','男');
+/*方法3*/
+insert into study11 set id=8,name='study06',sex='男';
+/*方法4*/
+insert into study1 values (1,'study01',now(),20);/*方法5*/
+insert into study1 values (2,'study02',default,20);
+/*方法6*/
+create table study13 select * from study11; // 创建一个新表 study13，并将 study11 表中的所有数据复制到 study13 中
+truncate table study13; // 清空 study13 表中的所有数据
+insert into study13 select * from study11; //  将 study11 表中的所有数据再次插入到 study13 表中
+```
+
+![](Texture/插入表.png)
+
+#### delete
+
+语法：delete from 表名 [where 条件] [order by] [limit row_count];
+
+![image-20250107172324928](Texture/删除1.png)
+
+```c#
+delete from study13 where id=1;// 从 study13 表中删除 id 列值为 1 的行
+```
+
+![](Texture/删除2.png)
+
+```c#
+delete from study13 limit 2;// 用于从 study13 表中删除最多 2 行数据
+```
+
+![](Texture/删除3.png)
+
+![](Texture/删除4.png)
+
+#### update
+
+语法：update 表名 set 列名=值 where 条件;
+
+```
+update study13 set name='study11',sex='女' where id=1;
+```
+
+![](Texture/更新表1.png)
+
+![](Texture/更新表2.png)
+
+#### select
+
+
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
