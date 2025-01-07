@@ -649,13 +649,48 @@ update study13 set name='study11',sex='女' where id=1;
 
 #### select
 
+**语法：select 字段/表名 from 表名/视图名 where 查询条件;**
+
+查询条件：
+
+- where 条件
+- group by 分组
+- having 分组后再聚合
+- limit 限制多少行显示
+- order by [asc|desc] 排序，升|降
+
+##### 列连接
+
+```
+//从 study11 表中选择数据的 SQL 查询语句。它不仅返回 name 列的值，还通过连接 name 和 sex 列生成一个新的列，便于在结果中显示姓名和性别的组合
+select name,concat(name,'-',sex) as '姓名+性别' from study11;
+```
+
+![](Texture/列连接1.png)
+
+##### 别名 as/也可以省略
+
+```
+//条件是 study11 表和 study12 表中的 name 列相匹配。这种查询常用于查找两个表之间的关联数据
+select a.* from study11 a,study12 b where a.name=b.name;
+```
+
+![](Texture/别名as也可以省略.png)
+
+##### 虚拟表dual
+
+```c#
+//从虚拟表 dual 中选择当前的日期和时间。由于 dual 表只有一行一列，因此查询结果将只返回当前的日期和时间
+select now() from dual;
+```
+
+![](Texture/虚拟表dual.png)
 
 
-![](Texture/.png)
 
-![](Texture/.png)
 
-![](Texture/.png)
+
+
 
 ![](Texture/.png)
 
