@@ -1401,51 +1401,232 @@ SELECT HASHBYTES('MD5','abc')
 
 ![](Texture/MD5.png)
 
+## 存储过程与自定义函数 
+
+### 存储过程
+
+#### delimiter
+
+MySQL 中有一个命令是delimiter，作用是设置命令段的结束符号，即遇到这个所设置的结束符号后，按回车，则命令段就可以执行了。通常默认情况下，命令的结束符号是分号（;），但是在存储过程中，过程体内可能会包含分号（;），因此需要将命令结束符号替换成其他的字符，如$$、//等，存储过程创建完成后，可以将命令段的结束符号重新设为分号。
+
+语法：delimiter 命令结束符
+
+![](Texture/delimiter.png)
+
+#### 存储过程示例
+
+##### 创建
+
+```mysql
+DELIMITER $$
+
+-- 创建一个存储过程
+CREATE PROCEDURE SHOW_EMP02()
+BEGIN
+    SELECT * FROM STUDY11;
+END$$
+
+-- 恢复分隔符为默认的分号
+DELIMITER ;
+```
+
+![](Texture/delimiter2.png)
+
+##### 调用
+
+```mysql
+CALL SHOW_EMP02();
+```
+
+![](Texture/delimiter3.png)
+
+#### 查看存储过程
+
+##### 查看所有存储过程
+
+```mysql
+SHOW PROCEDURE STATUS;
+```
+
+![](Texture/STATUS1.png)
+
+##### 查看指定数据库的存储过程
+
+```mysql
+SHOW PROCEDURE STATUS WHERE DB='study_db';
+```
+
+![](Texture/STATUS2.png)
+
+##### 查看指定存储过程源代码
+
+```mysql
+SHOW CREATE PROCEDURE SHOW_EMP02;
+```
+
+![](Texture/STATUS3.png)
+
+#### 删除存储过程
+
+```mysql
+DROP PROCEDURE SHOW_EMP01;
+```
+
+![](Texture/DROPPROCEDURE1.png)
+
+![](Texture/DROPPROCEDURE2.png)
+
+#### 声明变量
+
+```mysql
+DELIMITER $$
+CREATE PROCEDURE SHOW_EMP03()
+BEGIN
+    #定义一个名为ROWS的整型变量，并将其默认值设置为 0
+    DECLARE row_count  INT DEFAULT 0;    
+    #计算STUDY11表中的行数，并将结果赋值给变量 ROWS。
+    #COUNT(*)函数用于计算表中的总行数
+    SELECT COUNT(*) INTO row_count  FROM STUDY11;
+    #结果返回
+    SELECT row_count  AS TotalRows;
+END$$
+DELIMITER ;
+```
+
+![](Texture/DECLARE.png)
+
+![](Texture/DECLARE2.png)
+
+#### 参数
+
+##### IN：输入参数
+
+```mysql
+DELIMITER $$
+#IN PNAME VARCHAR(12) 表示 PNAME 是一个输入参数，类型为 VARCHAR(12)。这表示该参数可以接收长度最多为 12 的字符串。
+CREATE PROCEDURE GETSEX (IN PNAME VARCHAR(12))
+BEGIN
+    SELECT SEX FROM STUDY11 WHERE NAME=PNAME;
+END$$
+DELIMITER ;
+```
+
+![](Texture/IN1.png)
+
+![](Texture/IN2.png)
+
+![](Texture/IN3.png)
+
+![](Texture/IN4.png)
+
+##### OUT：输出参数
+
+```mysql
+DELIMITER $$
+CREATE PROCEDURE GETID (IN PNAME VARCHAR(12),OUT PID INT)
+BEGIN
+    SELECT ID INTO PID FROM STUDY11 WHERE NAME=PNAME;
+END$$
+DELIMITER ;
+```
+
+![](Texture/OUT1.png)
+
+```mysql
+#使用 @ 符号来表示会话变量，这些变量可以在当前会话中被多个 SQL 语句访问和修改
+CALL GETID ('study01',@PID);
+```
+
+![](Texture/OUT2.png)
+
+##### INOUT：输入输出参数
+
+在 MySQL 中，`INOUT` 是存储过程参数的一种类型，它允许参数在存储过程内被修改，并且这些修改会反映到调用存储过程的上下文中。具体来说，`INOUT` 参数既可以作为输入参数接收值，也可以作为输出参数返回修改后的值
+
+```mysql
+DELIMITER $$
+CREATE PROCEDURE ADDINT (INOUT PNUM INT,IN PINC INT)
+BEGIN
+    SET PNUM=PNUM+PINC;
+END$$
+DELIMITER ;
+```
+
+![](Texture/INOUT.png)
+
+### 自定义函数
+
+```mysql
+DROP FUNCTION IF EXISTS RAND_STR;
+#如果开启了BIN-LOG，需要加上以下这句。
+#在创建存储过程或函数时，如果 MySQL 的二进制日志（bin-log）功能开启，可能需要设置 LOG_BIN_TRUST_FUNCTION_CREATORS 为TRUE，以允许没有UPER权限的用户创建函数
+SET GLOBAL LOG_BIN_TRUST_FUNCTION_CREATORS=TRUE;
+#随机生成一个指定个数的字符串
+DELIMITER $$
+#创建一个名为RAND_STR的函数，该函数接受一个整数参数 PLEN，表示要生成的随机字符串的长度,返回字符串
+CREATE FUNCTION RAND_STR (PLEN INT) RETURNS VARCHAR(255)
+BEGIN
+    #声明一个包含所有小写和大写字母的字符PSTR，用于生成随机字符
+    DECLARE PSTR VARCHAR(100) DEFAULT 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    #声明一个计数器变量 I，用于记录已生成的字符数量
+    DECLARE I INT DEFAULT 0;
+    #生成结果
+    DECLARE PRESULT VARCHAR(255) DEFAULT '';
+    WHILE I<PLEN DO
+        SET PRESULT=CONCAT(PRESULT,SUBSTRING(PSTR,CEILING(RAND()*52),1));
+        SET I=I+1;
+    END WHILE;
+    #返回结果
+    RETURN PRESULT;
+END$$
+DELIMITER ;
+```
+
+> 可以看出，自定义函数的参数，不像存储过程那样需要IN了。
+
+!![](Texture/FUNCTION.png)
+
+> 说明：MySQL的自定义函数，相当于SQL Server中的标量函数，当前版本尚未支持表值函数，这也是一大功能缺陷吧。当然，想返回一个表，可以使用存储过程的方式来实现
+
+### 存储过程构建千万条数据
+
+#### 创建表
+
+```mysql
+CREATE TABLE EMP (ID INT,NAME VARCHAR(50),AGE INT);
+```
+
+#### 通过存储过程调用自定义函数RAND_STR构建千万条数据：
+
+```mysql
+-- 删除存储过程
+DROP PROCEDURE IF EXISTS INSERT_EMP;
+#show PROCEDURE STATUS WHERE DB='study_db';
+-- 创建存储过程
+DELIMITER $$
+
+CREATE PROCEDURE INSERT_EMP (IN startNum INT, IN maxNum INT)
+BEGIN
+    SET AUTOCOMMIT=0;  -- 关闭自动提交
+
+    SET @i = startNum;  -- 初始化计数器为 startNum
+    REPEAT
+        SET @i = @i + 1;  -- 增加计数器
+        INSERT INTO EMP (ID, `NAME`, AGE) VALUES (@i, RAND_STR(6), CEILING(18 + RAND() * 30));
+    UNTIL @i >= maxNum  -- 设定循环结束条件
+    END REPEAT;
+
+    COMMIT;  -- 提交所有插入
+END$$
+
+DELIMITER ;  -- 恢复默认分隔符
+
+-- 调用存储过程
+CALL INSERT_EMP(0, 10);
+```
+![](Texture/构建千万条数据.png)
 
 
-
-
-
-
-
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
-
-![](Texture/.png)
 
 ![](Texture/.png)
 
