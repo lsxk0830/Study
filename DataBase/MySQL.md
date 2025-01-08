@@ -686,7 +686,151 @@ select now() from dual;
 
 ![](Texture/虚拟表dual.png)
 
+##### SQL语句注释方式
 
+- 语句前注释：#
+- \#select now() from dual;
+- 语句后注释：--
+  select now() from dual; --查当前系统时间
+- 多行注释：/**/
+
+```
+/*select now() from dual;*/
+```
+
+##### 常用的运算符
+
+- =：等于
+- \>：大于
+- <：小于
+- \>=：大于等于
+- <=：小于等于
+- <>：不等于
+- !=：不等于
+- is null：为null
+- is not null：不为null
+- [not]like：模糊查询
+- [not]between and：在什么范围内
+- [not]in：在什么范围值内
+
+```c#
+select * from study12 where age=20;
+select * from study12 where age<>20;
+select * from study12 where age>20;
+select * from study12 where age>=20;
+select * from study12 where age<20;
+select * from study12 where age<=20;
+//从 study12 表中选择所有列的数据，前提是 age 列的值在 18 到 20 之间（包括 18 和 20）
+select * from study12 where age between 18 and 20;
+select * from study12 where age not between 18 and 20;
+select * from study12 where age>=18 and age<=20;
+select * from study12 where age>=18 && age<=20;
+//从 study12 表中选择所有列的数据，前提是 age 列的值为 18、19 或 28
+select * from study12 where age in (18,19,28);
+select * from study12 where age not in (18,19,28);
+select * from study12 where name like 'study%';
+//从 study12 表中选择所有列的数据，前提是 name 列的值不包含 005 字符串
+select * from study12 where name not like '%005%';
+```
+
+##### 逻辑运算
+
+- 非：not
+- 与：and &&
+- 或：or
+- 异或：xor
+
+```
+在 SQL 中，使用普通的等于运算符 = 进行 NULL 值比较时，结果会返回 NULL，而不是 TRUE 或 FALSE。
+例如，NULL = NULL 的结果是 NULL，而 NULL <=> NULL 的结果是 TRUE
+select null is not not null,null is null;
+select null<=>null,10<=>null;
+```
+
+![](Texture/逻辑运算.png)
+
+##### 组合
+
+```
+select * from study12 where name='study01' and age=20;
+select * from study12 where name='study01' or age=21;
+```
+
+![](Texture/组合1.png)
+
+![](Texture/组合2.png)
+
+##### like
+
+从 `study12` 表中选择所有列的数据，前提是 `name` 列的值以 `study` 开头
+
+```
+select * from study12 where name like 'study%';
+```
+
+![](Texture/like.png)
+
+##### 查询分组与排序
+
+group by 分组
+
+group by 列 {asc升序|desc降序},{with rollup} 组内聚合计算
+
+```
+//是一条用于从 study12 表中选择数据的 SQL 查询语句，按 name 列的前 4 个字符进行分组，并将相同组的 name 值连接成一个字符串
+select left(name,4),group_concat(name) name from study12 group by left(name,4);
+```
+
+![](Texture/查询分组与排序.png)
+
+##### limit:限制返回的行数
+
+```
+//从 study12 表中选择所有列的数据，按 age 列降序排序，并只返回年龄最大的那一行
+select * from study12 order by age desc limit 1;
+```
+
+![](Texture/limit.png)
+
+##### distinct:去除重复记录
+
+```
+//从 study12 表中选择 name 列的前 4 个字符，并返回唯一的结果
+select distinct left(name,4) name from study12;
+```
+
+![](Texture/distinct.png)
+
+##### union:有重并集,把多个结果组合不去重
+
+```
+//从 study11 表和 study12 表中分别选择 name 列的值，并将这两个结果集合并在一起，返回所有的 name 值，包括重复的值
+select name from study11 union all select name from study12;
+```
+
+> 使用 `UNION` 操作符时，两个表的列数和数据类型必须匹配。根据你提供的信息，表1（包含 `id`、`name`、`sex`）和表2（包含 `id`、`name`、`age`）的列数和数据类型不完全相同，因此不能直接使用 `UNION` 来合并这两个表
+
+![](Texture/union.png)
+
+##### unionall:有重并集,把多个结果组合不去重
+
+```
+//从 study11 表和 study12 表中分别选择 name 列的值，并将这两个结果集合并在一起，返回所有的 name 值，包括重复的值
+select name from study11 union all select name from study12;
+```
+
+![](Texture/unionall.png)
+
+##### for update:会锁表(生产环境不要轻易用)
+
+```
+//从 study11 表中选择所有行，并对这些行进行锁定，以便在当前事务中进行更新或其他操作
+select * from study11 for update;
+```
+
+![](Texture/forupdate.png)
+
+## **常用函数**
 
 
 
@@ -708,3 +852,82 @@ select now() from dual;
 
 ![](Texture/.png)
 
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
