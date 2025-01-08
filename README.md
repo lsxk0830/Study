@@ -14,8 +14,8 @@
     - [基础_优化](Document/基础_优化.md)
     - [进阶_TextMeshPro](Document/进阶_TextMeshPro.md)
     - [进阶_合批](Document/进阶_合批.md)
-- 数据库
-  - [数据库](DataBase/MySQL.md)
+  - 数据库
+    - [数据库](DataBase/MySQL.md)
 - 书籍
   - [Unity 3D高级编程-主程手记](Document/书籍_Unity 3D高级编程-主程手记)
   - [Unity Shader入门精要](Document/书籍_Unity Shader入门精要)
