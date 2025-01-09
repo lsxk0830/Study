@@ -1,5 +1,9 @@
 https://www.cnblogs.com/atomy/p/13628376.html
 
+[TOC]
+
+
+
 ## 安装MySQL
 
 [MySQL下载链接](https://dev.mysql.com/downloads/installer/)
@@ -1626,26 +1630,479 @@ CALL INSERT_EMP(0, 10);
 ```
 ![](Texture/构建千万条数据.png)
 
+## 索引
+
+### 索引分类
+
+1. 单值索引：即一个索引只包含单个列，一个表可以有多个单列索引。
+2. 唯一索引：索引列的值必须唯一，但允许有空值。
+3. 复合索引：一个索引包含多个列，如INDEX MultiIdx(id,name,age)
+4. 全文索引：只有在MyISAM引擎上才能使用，只能在CHAR、VARCHAR、TEXT类型字段上使用全文索引。
+5. 空间索引：空间索引是对空间数据类型的字段建立的索引。
+
+### 索引操作
+
+#### 创建索引
+
+语法：CREATE INDEX 索引名称 ON table (column[,column]...);
+
+```mysql
+CREATE INDEX ID_INDEX ON emp (ID);
+CREATE INDEX NAME_INDEX ON emp (NAME);
+```
+
+#### 查看索引
+
+语法：SHOW INDEX FROM 表名;
+
+```mysql
+SHOW INDEX FROM emp;
+```
+
+#### 删除索引
+
+语法：DROP INDEX 索引名称 ON 表名;
+
+```mysql
+DROP INDEX NAME_INDEX ON emp;
+```
 
 
-![](Texture/.png)
 
-![](Texture/.png)
+![](Texture/CREATEINDEX1.png)
 
-![](Texture/.png)
+![](Texture/CREATEINDEX2.png)
 
-![](Texture/.png)
+![](Texture/CREATEINDEX3.png)
 
-![](Texture/.png)
+#### 自动创建索引
 
-![](Texture/.png)
+1. 在表上定义了主键时，会自动创建一个对应的唯一索引。
+2. 在表上定义了一个外键时，会自动创建一个普通索引。
 
-![](Texture/.png)
+```mysql
+CREATE TABLE emp (
+    ID INT PRIMARY KEY,  -- 自动创建主键索引
+    NAME VARCHAR(255),
+    AGE INT,
+    UNIQUE (NAME)  -- 自动创建唯一索引
+);
+```
 
-![](Texture/.png)
+```mysql
+// dept_id 列作为外键会自动创建一个索引
+CREATE TABLE department (
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(255)
+);
 
-![](Texture/.png)
+CREATE TABLE emp (
+    ID INT PRIMARY KEY,
+    NAME VARCHAR(255),
+    AGE INT,
+    dept_id INT,
+    FOREIGN KEY (dept_id) REFERENCES department(dept_id)  -- 自动创建外键索引
+);
+```
 
-![](Texture/.png)
+```mysql
+#如果你已经有了一个表，并希望在某些列上自动创建索引，可以使用 ALTER TABLE 语句来添加索引
+ALTER TABLE emp ADD INDEX idx_name (NAME);
+```
 
-![](Texture/.png)
+### EXPLAIN
+
+#### 关于EXPLAIN
+
+作用：用来查看索引是否正在被使用，并且输出其使用的索引的信息。
+
+#### EXPLAIN使用示例
+
+```mysql
+EXPLAIN SELECT * FROM emp WHERE ID = 5;
+```
+
+#### EXPLAIN输出信息
+
+id：select查询的序列号，包含一组数字，表示查询中执行select子句或操作表的顺序。
+
+select_type：所使用的SELECT查询类型。
+
+![](Texture/EXPLAIN1.png)
+
+![](Texture/EXPLAIN2.png)
+
+- **table**：显示这一行的数据是关于哪张表的。
+- **type**：type显示的是访问类型，是较为重要的一个指标，结果值从最好到最差依次是：system>const>eq_ref>ref<range>index>all（倒序）一般来说，保证查询至少达到range级别，最好能达到ref。
+- **key**：实际使用的索引，若为null，则没有使用到索引。（两种可能，①没建立索引。②建立索引，但索引失效）。查询中若使用了覆盖索引，则该索引仅出现在key列表中。
+- **possible_keys**：显示可能应用在这张表中的索引，一个或多个。查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用。
+- **key_len**：表示索引中使用的字节数，可通过该列计算查询中使用的索引的长度。在不损失精确型的情况下，长度越短越好，key_len显示的值为索引字段的最大可能长度，并非实际使用长度，即key_len是根据定义计算而得，不是通过表内检索出的。
+- **ref**：显示索引的哪一列被使用了，如果可能的话，是一个常数，哪些列或者常量被用于查找索引列上的值。只有当type为ref的时候，ref这列才会有值。
+- **rows**：根据表统计信息以及索引选用情况，大致估算出找到所需的记录所需要读取的行数，所以越小越好。可以用来查询sql的读取行数。
+- **extra**：包含不适合在其它列中显示但十分重要的额外信息。
+
+#### 哪些情况适合/需要创建索引
+
+- 主键（自动建立唯一索引）
+- 外键
+- 查询中与其它表关联的字段
+- 频繁作为查询条件的字段
+- 查询中统计或者分组的字段
+- 查询中排序的字段
+
+#### 哪些情况不适合创建索引
+
+- 频繁更新的字段，因为每次更新不单单更新了记录还会更新索引。
+- WHERE条件里用不到的字段
+- 表记录太少
+- 经常增删改的表
+- 如果某个数据列包含太多重复的内容（如性别，为它建立索引就没有太大的实际效果)。
+
+## **游标/动态SQL/临时表/事务**
+
+### 游标
+
+#### 越界标志
+
+在MySQL游标中，可以声明DECLARE CONTINUE HANDLER(declare continue handler)来操作1个越界标志。
+
+语法：DECLARE CONTINUE HANDLER FOR NOT FOUND STATEMENT;
+
+#### REPEAT方式
+
+```mysql
+DROP PROCEDURE if EXISTS CHANGESEX;
+DELIMITER $$
+CREATE PROCEDURE CHANGESEX() #创建应用程序
+BEGIN
+    DECLARE HAVE INT DEFAULT 1;#声明 int 类型Have，默认值是1
+    DECLARE PID INT;#声明 int 类型 PID1
+    
+    DECLARE CURT CURSOR FOR SELECT ID FROM STUDY11;#声明一个名为 CURT 的游标，用于选择 STUDY11 表中的 ID 列
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET HAVE=0;#声明一个继续处理程序，当未找到结果时，将变量 HAVE 设置为 0
+    OPEN CURT;
+    FETCH CURT INTO PID;#将游标 CURT 当前行的值赋给变量 PID, 用于初始化 PID
+    REPEAT
+    	#在 STUDY11 表中，查找 ID 列等于 PID 的行，并根据 SEX 列的当前值进行更新。如果 SEX 是 '男'，则将其更新为 'MALE'；如果不是，则将其更新为 'FEMALE'
+		SELECT PID;  -- 查看当前的 PID 值
+        UPDATE STUDY11
+        SET SEX= CASE SEX # CASE 根据不同的条件返回不同的值
+        			WHEN '男' THEN 'MALE' 
+        			ELSE 'FEMALE' 
+        		END 
+        WHERE ID=PID;
+        FETCH CURT INTO PID; #用于在每次更新后获取下一行的 ID 值
+    	UNTIL HAVE=0 
+    END REPEAT;
+    CLOSE CURT;
+END$$
+DELIMITER ;
+CALL CHANGESEX();  -- 调用存储过程
+```
+
+![](Texture/REPEAT方式.png)
+
+> 需要注意的是：MySQL不能像SQL Server那样，使用DEALLOCATE的方式释放游标资源
+
+#### WHILE方式
+
+```mysql
+DELIMITER $$ #设置语句分隔符为 $$
+CREATE PROCEDURE CHANGESEX1 () #创建存储过程 CHANGESEX1
+BEGIN
+    DECLARE HAVE INT DEFAULT 1;#声明一个int变量 HAVE，默认值为 1
+    DECLARE PID INT;
+    
+    DECLARE CURT CURSOR FOR SELECT ID FROM STUDY11; #声明一个名为 CURT 的游标，用于选择 STUDY11 表中的 ID 列
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET HAVE=0;#声明一个继续处理程序，当未找到结果时，将变量 HAVE 设置为 0
+    OPEN CURT;#打开游标
+    FETCH CURT INTO PID;#初始化 PID给CURT赋值
+    WHILE HAVE=1 DO #当 HAVE 的值为 1 时，进入循环，（默认值为1，能够正确处理每一行数据）
+    	#ID 列等于 PID时，根据 SEX 列的当前值更新性别
+        UPDATE STUDY11 SET SEX=CASE SEX WHEN '男' THEN 'MALE' ELSE 'FEMALE' END WHERE ID=PID;
+        FETCH CURT INTO PID;
+    END WHILE;#结束循环
+    CLOSE CURT;#关闭游标
+END$$ # 结束存储过程
+DELIMITER ;#恢复默认的语句分隔符
+
+CALL CHANGESEX1();
+```
+
+![](Texture/WHILE方式.png)
+
+### 动态SQL
+
+#### 动态SQL格式
+
+```mysql
+SET SQL= (预处理的SQL语句，可以使用CONCAT拼接的语句，参数用 ？代替 。);
+SET @SQL=SQL;
+PREPARE STMT_NAME FROM @SQL;
+SET @VAR_NAME=XXX;
+EXECUTE STMT_NAME [USING @VAR_NAME[,@VAR_NAME]...];
+{DEALLOCATE | DROP} PREPARE STMT_NAME;
+```
+
+#### 动态SQL示例
+
+```mysql
+DELIMITER $$
+CREATE PROCEDURE GETNAME (IN PID INT)
+BEGIN
+    #定义预处理SQL语句
+    DECLARE STRSQL VARCHAR(1000);
+    #拼接SQL语句
+    SET STRSQL="SELECT NAME FROM EMP WHERE ID=?";
+    #将自定义变量赋值给用户变量.
+    SET @SQL=STRSQL;
+    #预处理动态SQL语句.将存储在用户变量 @SQL 中的 SQL 查询字符串编译成一个可执行的预处理语句，并将其命名为 STMT
+    PREPARE STMT FROM @SQL;
+    #传递动态SQL参数
+    SET @PARAM1=PID;    
+    #执行动态SQL语句
+    EXECUTE STMT USING @PARAM1;
+    #释放PREPARE
+    DEALLOCATE PREPARE STMT;
+END$$
+DELIMITER ;
+
+CALL GETNAME(5);
+```
+
+![](Texture/动态SQL示例.png)
+
+可以看出，MySQL动态SQL支持""。
+
+#### 动态SQL注意事项
+
+1. 存储动态SQL的值的变量不能是自定义变量，必须是用户变量或者全局变量 。如：SET SQL='XXX';PREPARE STMT FROM SQL;都是错误的写法，正确的写法为：SET @SQL='XXX';PREPARE STMT FROM @SQL; 
+2. 即使PREPARABLE_STMT语句中的 ? 所代表的是一个字符串，也不需要用引号将 ? 两边包起来。
+3. 如果动态语句中用到了 IN ，则SQL语句可以写成：SET STRSQL="SELECT NAME FROM EMP WHERE ID IN (?,?,?)";
+
+```mysql
+-- 错误的写法
+SET SQL = 'SELECT NAME FROM EMP WHERE ID = ?';  -- 这是错误的，因为 SQL 是自定义变量
+PREPARE STMT FROM SQL;  -- 这也会出错
+
+-- 正确的写法
+SET @SQL = 'SELECT NAME FROM EMP WHERE ID = ?';  -- 使用用户变量 @SQL
+PREPARE STMT FROM @SQL;  -- 这是正确的
+```
+
+```mysql
+SET @SQL = 'SELECT NAME FROM EMP WHERE ID = ?';  -- 正确的写法
+PREPARE STMT FROM @SQL;  -- 预处理语句
+
+SET @PARAM1 = 5;  -- 假设我们要查询 ID 为 5 的员工
+EXECUTE STMT USING @PARAM1;  -- 执行预处理语句，使用 @PARAM1 作为参数
+
+#如果你写成 SET @SQL = 'SELECT NAME FROM EMP WHERE ID = '?'，这将导致 SQL 语法错误，因为 ? 被视为字符串，而不是占位符
+```
+
+```mysql
+SET @SQL = 'SELECT NAME FROM EMP WHERE ID IN (?, ?, ?)';  -- 使用 IN 子句，包含多个占位符
+PREPARE STMT FROM @SQL;  -- 预处理语句
+
+-- 假设我们要查询 ID 为 1, 2, 3 的员工
+SET @PARAM1 = 1;
+SET @PARAM2 = 2;
+SET @PARAM3 = 3;
+
+EXECUTE STMT USING @PARAM1, @PARAM2, @PARAM3;  -- 执行预处理语句，传递多个参数
+```
+
+### 临时表
+
+#### 临时表创建
+
+```mysql
+CREATE TEMPORARY TABLE `emp_t1` (
+    `ID` int(11) DEFAULT NULL,
+    `NAME` varchar(50) DEFAULT NULL,
+    `AGE` int(11) DEFAULT NULL,
+    KEY `ID_INDEX` (`ID`)
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8 #ENGINE=InnoDB 使用 InnoDB 存储引擎
+```
+
+```mysql
+#创建了一个临时表 emp_t2，并将 EMP 表中 ID 小于或等于 10 的所有行复制到这个临时表中
+CREATE TEMPORARY TABLE emp_t2 SELECT * FROM EMP WHERE ID<=10;
+```
+
+> 可以看出，MySQL并不支持像SQL Server那样使用SELECT * INTO #EMP FROM EMP的方式来创建临时表。
+
+#### 临时表删除
+
+```mysql
+DROP TABLE EMP_T1,EMP_T2;
+```
+
+#### 临时表测试（存储过程）
+
+```mysql
+DROP PROCEDURE IF EXISTS TempTest1;
+
+DELIMITER $$
+CREATE PROCEDURE TempTest1 ()
+BEGIN
+    #临时表创建方式一测试
+    CREATE TEMPORARY TABLE `emp_t1` (
+        `ID` int(11) DEFAULT NULL,
+        `NAME` varchar(50) DEFAULT NULL,
+        `AGE` int(11) DEFAULT NULL,
+        KEY `ID_INDEX` (`ID`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    
+    INSERT INTO EMP_T1 SELECT * FROM EMP LIMIT 10;
+    
+    #临时表创建方式二测试
+    CREATE TEMPORARY TABLE emp_t2 SELECT * FROM EMP WHERE ID<=10;
+    
+    #结果返回
+    #UNION 操作符用于合并两个或多个 SELECT 查询的结果集
+    #从两个表 EMP_T1 和 EMP_T2 中选择所有行，并将它们合并成一个结果集
+    SELECT * FROM EMP_T1 UNION SELECT * FROM EMP_T2;
+    
+    #临时表删除
+    DROP TABLE EMP_T1,EMP_T2;
+END$$
+DELIMITER ;
+
+CALL TempTest1 ();
+```
+
+![](Texture/临时表测试.png)
+
+#### 自定义函数能使用临时表吗
+
+不可以！自定义函数不支持创建表，不管是正常表还是临时表。（SQL Server自定义函数，也不支持临时表，但是支持表变量。）
+
+### 事务
+
+#### 基础概念
+
+事务（Transaction）是访问和更新数据库的程序执行单元；事务中可能包含一个或多个sql语句，这些语句要么都执行，要么都不执行。
+
+#### MySQL逻辑架构与存储引擎
+
+![](Texture/MySQL逻辑架构与存储引擎.png)
+
+如上图所示，MySQL逻辑架构从上往下可以分为三层：
+
+- 第一层：处理客户端连接、授权认证等。
+- 第二层：服务器层，负责查询语句的解析、优化、缓存以及内置函数的实现、存储过程等。
+- 第三层：存储引擎，负责MySQL中数据的存储和提取。
+
+说明1：MySQL中服务器层不管理事务，事务是由存储引擎实现的。
+
+说明2：MySQL支持事务的存储引擎有InnoDB、NDB Cluster等，其中InnoDB的使用最为广泛；其他存储引擎不支持事务，如MyIsam、Memory等。
+
+#### 事务控制语句
+
+1. BEGIN 或 START TRANSACTION 显式地开启一个事务；
+2. COMMIT 也可以使用 COMMIT WORK，不过二者是等价的。COMMIT 会提交事务，并使已对数据库进行的所有修改成为永久性的；
+3. ROLLBACK 也可以使用 ROLLBACK WORK，不过二者是等价的。回滚会结束用户的事务，并撤销正在进行的所有未提交的修改；
+4. SAVEPOINT identifier，SAVEPOINT 允许在事务中创建一个保存点，一个事务中可以有多个 SAVEPOINT；
+5. RELEASE SAVEPOINT identifier 删除一个事务的保存点，当没有指定的保存点时，执行该语句会抛出一个异常；
+6. ROLLBACK TO identifier 把事务回滚到标记点；
+7. SET TRANSACTION 用来设置事务的隔离级别。InnoDB 存储引擎提供事务的隔离级别有READ UNCOMMITTED、READ COMMITTED、REPEATABLE READ 和 SERIALIZABLE。
+
+#### 事务提交模式
+
+SET AUTOCOMMIT=1 开启自动提交
+
+SET AUTOCOMMIT=0 禁止自动提交
+
+默认是开启自动提交，可以使用以下命令查询：
+
+```mysql
+SHOW VARIABLES LIKE 'AUTOCOMMIT';
+```
+
+#### 事务示例
+
+##### 无判断语句事务
+
+```mysql
+SHOW PROCEDURE STATUS WHERE Name = 'TranTest1';
+DROP PROCEDURE IF EXISTS TranTest1;
+
+DELIMITER $$
+CREATE PROCEDURE TranTest1()
+BEGIN
+    #创建一个名为 EMP_T1 的临时表，并从 EMP 表中选择数据。
+    #具体来说，WHERE 1=2 是一个永远为假的条件，
+    #因此这条语句将创建一个结构与 EMP 表相同但不包含任何数据的临时表
+    CREATE TEMPORARY TABLE EMP_T1 SELECT * FROM EMP WHERE 1=2;
+    #开启事务
+    START TRANSACTION;
+    
+    #数据插入
+    INSERT INTO EMP_T1 VALUES (1,'HELLO',18);
+    INSERT INTO EMP_T1 VALUES (2,'WORLD',19);
+    
+    #提交事务
+    COMMIT;
+    
+    #结果返回
+    SELECT * FROM EMP_T1;
+    
+    #临时表删除
+    DROP TABLE EMP_T1;
+END$$
+DELIMITER ;
+
+CALL TranTest1();
+```
+
+![](Texture/TranTest1.png)
+
+##### 有判断语句事务（推荐）
+
+```mysql
+Drop PROCEDURE IF EXISTS TranTest2;
+DELIMITER $$
+CREATE PROCEDURE TranTest2()
+BEGIN
+    #判断事务是否异常的错误变量
+    DECLARE PERROR INT DEFAULT 0;
+		#声明一个异常处理程序。当发生 SQL 异常时（如插入失败），将执行 SET PERROR=1;，
+		#将 PERROR 设置为 1，表示发生了错误。使用 CONTINUE 表示即使发生异常，存储过程仍将继续执行后续语句
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET PERROR=1;
+
+    #临时表创建
+    CREATE TEMPORARY TABLE EMP_T1 SELECT * FROM EMP WHERE 1=2;
+    
+    #开启事务
+    START TRANSACTION;
+
+    #数据插入
+    INSERT INTO EMP_T1 VALUES (1,'HELLO',18);
+    INSERT INTO EMP_T1 VALUES (2,'WORLD',19);
+    
+    #提交事务
+    IF (PERROR=0) THEN #如果 PERROR 为 0（表示没有发生错误），则执行 COMMIT;，提交事务，保存对 EMP_T1 的更改。
+        COMMIT;
+    ELSE #如果 PERROR 不为 0（表示发生了错误），则执行 ROLLBACK;，回滚事务，撤销对 EMP_T1 的更改
+        ROLLBACK;
+    END IF;
+    
+    #结果返回
+    SELECT * FROM EMP_T1;
+    
+    #临时表删除
+    DROP TABLE EMP_T1;
+END$$
+DELIMITER ;
+
+CALL TranTest2();
+```
+
+![](Texture/TranTest2_1.png)
+
+![](Texture/TranTest2_2.png)
+
+> 说明：SQL Server中事务执行是否有报错，可以使用@@ERROR来判断，@@ERROR=0代表无报错
+
