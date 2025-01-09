@@ -2106,3 +2106,350 @@ CALL TranTest2();
 
 > 说明：SQL Server中事务执行是否有报错，可以使用@@ERROR来判断，@@ERROR=0代表无报错
 
+## **触发器**
+
+### 触发器概念
+
+触发器是与表有关的数据库对象，在满足定义条件时触发，并执行触发器中定义的语句集合。
+
+### 触发器创建
+
+#### 创建语法
+
+```mysql
+CREATE [DEFINER = { 'user' | CURRENT_USER }]　
+TRIGGER trigger_name
+trigger_time trigger_event
+ON table_name
+FOR EACH ROW
+[trigger_order]
+trigger_body
+```
+
+#### 创建语法关键词解释
+
+![](Texture/TRIGGER.png)
+
+#### 触发执行内容OLD与NEW
+
+OLD：表示将要删除的旧行（类似于SQL Server中的DELETED表，只不过前者是行记录，后者是表）。
+
+NEW：表示将要插入的新行（类似于SQL Server中的INSERTED表，只不过前者是行记录，后者是表）。
+
+注：因为是单行记录，可以将它们理解为面向对象语言中的对象，直接通过`OLD.字段名`和`NEW.字段名`来使用。
+
+事件与OLD、NEW的对应关系：
+
+|  事件  | OLD  | NEW  |
+| :----: | :--: | :--: |
+| INSERT |  ×   |  √   |
+| DELETE |  √   |  ×   |
+| UPDATE |  √   |  √   |
+
+由上可见，更新一条记录，实际上是先将原记录删除（临时保存在OLD中），再插入一条新的记录（临时保存在NEW中）。
+
+### 触发器示例
+
+#### 触发自身表
+
+1. 需求描述：假设有个员工表，如果新入职人员（INSERT）的年龄小于18岁时，自动将其更新为18岁。
+
+2. 测试表创建：
+
+   ```mysql
+   DROP TABLE IF EXISTS EMP1;
+   CREATE TABLE `emp1` (
+       `ID` int(11) DEFAULT NULL,
+       `NAME` varchar(50) DEFAULT NULL,
+       `AGE` int(11) DEFAULT NULL,
+       KEY `ID_INDEX` (`ID`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+   ```
+
+3. 触发器创建：
+
+   ```mysql
+   #当年龄小于18岁时自动更新为18岁
+   DELIMITER $$
+   DROP TRIGGER IF EXISTS triEmp1ForInsert$$
+   #定义一个名为 triEmp1ForInsert 的触发器
+   #触发时机: BEFORE INSERT 表示该触发器在向 EMP1 表插入新记录之前触发
+   #作用范围: FOR EACH ROW 表示触发器会对每一行插入操作执行一次。
+   CREATE TRIGGER triEmp1ForInsert BEFORE INSERT ON EMP1 FOR EACH ROW
+   BEGIN
+       IF (NEW.AGE<18) THEN
+           SET NEW.AGE=18;
+       END IF;
+   END$$
+   DELIMITER ;
+   ```
+
+4. 数据插入：
+
+   ```mysql
+   INSERT INTO EMP1 VALUES (1,'HELLO',17);
+   ```
+
+5. 结果查询：
+
+   ```mysql
+   SELECT * FROM EMP1;
+   ```
+
+   ![](Texture/触发自身表.png)
+
+6. 注意事项：
+
+   需要注意的是，MySQL触发器不允许对自身表进行更新，但是允许更新NEW。
+
+   因此，上面的需求假如想通过AFTER INSERT来更改EMP1表，是行不通的。
+
+   下面进行错误的演示：
+
+   ```mysql
+   #错误的演示
+   DELIMITER $$
+   DROP TRIGGER IF EXISTS triEmp1ForInsert$$
+   CREATE TRIGGER triEmp1ForInsert AFTER INSERT ON EMP1 FOR EACH ROW
+   BEGIN
+       IF (NEW.AGE<18) THEN
+           UPDATE EMP1 SET AGE=18 WHERE ID=NEW.ID;
+       END IF;
+   END$$
+   DELIMITER ;
+   ```
+
+#### 触发其它表
+
+1. 需求描述
+
+   假设有两个表结构一样的表EMP1和EMP2，如果EMP1有新记录插入时而EMP2还没有，则将新记录也插入到EMP2中。
+
+2. 测试表创建
+
+   ```mysql
+   DROP TABLE IF EXISTS EMP1;
+   CREATE TABLE `emp1` (
+       `ID` int(11) DEFAULT NULL,
+       `NAME` varchar(50) DEFAULT NULL,
+       `AGE` int(11) DEFAULT NULL,
+       KEY `ID_INDEX` (`ID`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+   #上下分开执行
+   DROP TABLE IF EXISTS EMP2;
+   CREATE TABLE `emp2` (
+       `ID` int(11) DEFAULT NULL,
+       `NAME` varchar(50) DEFAULT NULL,
+       `AGE` int(11) DEFAULT NULL,
+       KEY `ID_INDEX` (`ID`)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8
+   ```
+
+3. 触发器创建
+
+   ```mysql
+   #EMP1插入新记录而EMP2没有时，将新记录也插入到EMP2中。
+   DELIMITER $$
+   DROP TRIGGER IF EXISTS triEmp1ForInsert$$
+   CREATE TRIGGER triEmp1ForInsert AFTER INSERT ON EMP1 FOR EACH ROW
+   BEGIN
+   	#检查 EMP2 表中是否存在与新插入记录相同的 ID
+       IF NOT EXISTS (SELECT * FROM EMP2 WHERE ID=NEW.ID) THEN
+           INSERT INTO EMP2 (ID,`NAME`,AGE) VALUES (NEW.ID,NEW.NAME,NEW.AGE);
+       END IF;
+   END$$
+   DELIMITER ;
+   ```
+
+4. 数据插入
+
+   ```mysql
+   INSERT INTO EMP1 VALUES (1,'HELLO',18);
+   ```
+
+5. 结果查询
+
+   ```mysql
+   SELECT * FROM EMP2;
+   ```
+
+   ![](Texture/触发其他表.png)
+
+### 触发器查看
+
+```mysql
+#查看当前数据库所有触发器
+SHOW TRIGGERS;
+ 
+#查看指定数据库所有触发器
+SHOW TRIGGERS FROM TEST;
+
+#查看指定数据库指定表所有触发器
+SELECT * FROM INFORMATION_SCHEMA.TRIGGERS WHERE EVENT_OBJECT_SCHEMA='study_db' AND EVENT_OBJECT_TABLE='EMP1';
+```
+
+### 触发器删除
+
+```mysql
+#直接删除触发器
+DROP TRIGGER triEmp1ForInsert;
+
+#先检查再删除触发器
+DROP TRIGGER IF EXISTS triEmp1ForInsert;
+```
+
+
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
+
+![](Texture/.png)
