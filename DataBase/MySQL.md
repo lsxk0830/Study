@@ -1,9 +1,3 @@
-https://www.cnblogs.com/atomy/p/13628376.html
-
-[TOC]
-
-
-
 ## 安装MySQL
 
 [MySQL下载链接](https://dev.mysql.com/downloads/installer/)
@@ -2298,158 +2292,526 @@ DROP TRIGGER triEmp1ForInsert;
 DROP TRIGGER IF EXISTS triEmp1ForInsert;
 ```
 
+## **锁表解锁与加行锁**
 
+### 锁表解锁
 
-![](Texture/.png)
+#### 查询是否锁表
 
-![](Texture/.png)
+```mysql
+SHOW OPEN TABLES WHERE IN_USE>0;
+```
 
-![](Texture/.png)
+![](Texture/查询是否锁表.png)
 
-![](Texture/.png)
+#### 查询进程
 
-![](Texture/.png)
+```mysql
+SHOW PROCESSLIST
+```
 
-![](Texture/.png)
+![](Texture/查询进程.png)
 
-![](Texture/.png)
+#### 杀死进程(一般到这一步就解锁了)
 
-![](Texture/.png)
+```mysql
+KILL ID;
+```
 
-![](Texture/.png)
+![](Texture/杀死进程1.png)
 
-![](Texture/.png)
+![](Texture/杀死进程2.png)
 
-![](Texture/.png)
+#### 查看正运行的事务
 
-![](Texture/.png)
+```mysql
+SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX;
+```
 
-![](Texture/.png)
+![](Texture/查看正运行的事务.png)
 
-![](Texture/.png)
+#### 查看正在锁的事务
 
-![](Texture/.png)
+```mysql
+SELECT * FROM performance_schema.data_locks;
+SELECT * FROM information_schema.INNODB_TRX
+```
 
-![](Texture/.png)
+![](Texture/查看正在锁的事务.png)
 
-![](Texture/.png)
+![](Texture/查看正在锁的事务2.png)
 
-![](Texture/.png)
+#### 查看等待锁的事务
 
-![](Texture/.png)
+```mysql
+SELECT * FROM INFORMATION_SCHEMA.INNODB_LOCK_WAITS;
+```
 
-![](Texture/.png)
+#### 解锁表
 
-![](Texture/.png)
+```mysql
+UNLOCK TABLES;
+```
 
-![](Texture/.png)
+### 加行锁
 
-![](Texture/.png)
+#### 创建行锁条件
 
-![](Texture/.png)
+1. 表中创建索引，SELECT ... WHERE 字段（必须是索引，否则行锁无效）。
 
-![](Texture/.png)
+   注：InnoDB的行锁是针对索引加的锁，不是针对记录加的锁，并且该索引不能失效，否则都会从行锁升级为表锁。
 
-![](Texture/.png)
+2. 必须要有事务，这样才是行锁（排他锁）。
 
-![](Texture/.png)
+3. 在SELECT语句后面加上FOR UPDATE。
 
-![](Texture/.png)
+#### 示例
 
-![](Texture/.png)
+```mysql
+#加事务
+START TRANSACTION;
+#加锁
+SELECT * FROM EMP WHERE ID<=10 FOR UPDATE;
+#解析
+EXPLAIN SELECT * FROM EMP WHERE ID<=10 FOR UPDATE;
+#睡眠
+SELECT SLEEP(3);
+#提交
+COMMIT;
 
-![](Texture/.png)
+#加事务
+START TRANSACTION;
+#加锁
+SELECT * FROM EMP WHERE ID BETWEEN 11 AND 20 FOR UPDATE;
+#解析
+EXPLAIN SELECT * FROM EMP WHERE ID BETWEEN 11 AND 20 FOR UPDATE;
+#提交
+COMMIT;
+```
 
-![](Texture/.png)
+## **使用Navicat进行数据库的导出导入**
 
-![](Texture/.png)
+### 数据库导出
 
-![](Texture/.png)
+#### 单个表（结构+数据）
 
-![](Texture/.png)
+点击要导出的表，对着表点击右键，选择"转存SQL文件"，然后点击"结构和数据"。
 
-![](Texture/.png)
+![](Texture/单个表.png)
 
-![](Texture/.png)
+选择保存路径即可。
 
-![](Texture/.png)
+![](Texture/选择保存路径.png)
 
-![](Texture/.png)
+#### 多个表（数据）
 
-![](Texture/.png)
+1. 对着任意表点击右键，选择"导出向导"
 
-![](Texture/.png)
+   ![](Texture/多个表.png)
 
-![](Texture/.png)
+2. 选择你要导出的文件格式，点击"下一步"。
 
-![](Texture/.png)
+   ![](Texture/导出的文件格式.png)
 
-![](Texture/.png)
+3. 勾选你要导出的表，点击"下一步
 
-![](Texture/.png)
+   ![](Texture/勾选要导出的表.png)
 
-![](Texture/.png)
+4. 默认是导出所选表的所有字段，可依自己需求进行字段勾选，然后点击"下一步"
 
-![](Texture/.png)
+   ![](Texture/字段勾选.png)
 
-![](Texture/.png)
+5. 默认选择，点击"下一步"
 
-![](Texture/.png)
+   ![](Texture/下一步.png)
 
-![](Texture/.png)
+6. 点击"开始”
 
-![](Texture/.png)
+   ![](Texture/开始.png)
 
-![](Texture/.png)
+7. 执行完成后，在"打开"下拉框即可看到导出的文件
 
-![](Texture/.png)
+   ![](Texture/导出的文件.png)
 
-![](Texture/.png)
+#### 整个数据库（结构+数据）
 
-![](Texture/.png)
+1. 点击要导出的数据库，对着数据库点击右键，选择"转存SQL文件"，然后点击"结构和数据"
 
-![](Texture/.png)
+   ![](Texture/整个数据库.png)
 
-![](Texture/.png)
+2. 选择保存路径即可
 
-![](Texture/.png)
+   ![](Texture/选择保存路径.png)
 
-![](Texture/.png)
+### 数据库导入
 
-![](Texture/.png)
+#### SQL文件
 
-![](Texture/.png)
+1. 点击"文件"，选择"打开外部文件"，点击"查询"
 
-![](Texture/.png)
+   注：若在查询窗口，直接"CTRL+O"即可
 
-![](Texture/.png)
+   ![](Texture/SQL文件.png)
 
-![](Texture/.png)
+2. 选择要打开的SQL文件，点击"打开"，然后分别去执行即可
 
-![](Texture/.png)
+   ![](Texture/打开SQL文件.png)
 
-![](Texture/.png)
+#### Excel文件
 
-![](Texture/.png)
+1. 点击要导入的表，对着表点击右键，选择"导入向导"。
 
-![](Texture/.png)
+   ![](Texture/Excel1.png)
 
-![](Texture/.png)
+2. 选择"Excel文件"，点击"下一步"。 
 
-![](Texture/.png)
+   ![](Texture/Excel2.png)
 
-![](Texture/.png)
+3. 点击"..."，选择要导入的Excel文件，点击"打开"。
 
-![](Texture/.png)
+   ![](Texture/Excel3.png)
 
-![](Texture/.png)
+4. 勾选表，点击"下一步"。
 
-![](Texture/.png)
+   ![](Texture/Excel4.png)
 
-![](Texture/.png)
+5. Excel表有标题行的话，默认即可，点击"下一步"。
 
-![](Texture/.png)
+   ![](Texture/Excel5.png)
 
-![](Texture/.png)
+6. 目标表若无变更，直接点"下一步"。
 
-![](Texture/.png)
+   ![](Texture/Excel6.png)
+
+7. 点击"下一步"。
+
+   ![](Texture/Excel7.png)
+
+8. 依实际需求选择导入模式，点击"下一步"。
+
+   ![](Texture/Excel8.png)
+
+9. 点击"开始"。
+
+   ![](Texture/Excel9.png)
+
+10. 导入成功后，点击"关闭"即可。
+
+    ![](Texture/Excel10.png)
+
+## **使用Navicat进行数据库备份与还原**
+
+### 数据库备份
+
+1. 双击要备份的数据库，点击"备份"，然后点击"新建备份"。
+
+   ![](Texture/数据库备份1.png)
+
+2. 在"对象选择"页下选择要备份的对象，然后点击"备份"。
+
+   ![](Texture/数据库备份2.png)
+
+3. 备份成功后，可以看到系统按【年月日时分秒】产生的备份文件。
+
+   ![](Texture/数据库备份3.png)
+
+4. 对着备份文件如"20200912005413"点击右键，选择"在文件夹中显示"。
+
+   ![](Texture/数据库备份4.png)
+
+5. 可以看到备份文件默认存放在"我的文档"下的目录，每个数据库对应一个单独的文件夹，备份文件的扩展名为".nb3"。
+
+   ![](Texture/数据库备份5.png)
+
+### 数据库还原
+
+#### 自身数据库还原
+
+1. 双击选择要还原的数据库，点击"备份"，选择要还原的数据库备份文件，点击"还原备份"。
+
+   ![](Texture/自身数据库还原1.png)
+
+2. 在"对象选择"页下选择要还原的对象，然后点击"还原"。
+
+   ![](Texture/自身数据库还原2.png)
+
+3. 还原成功后，点击"关闭"即可。
+
+   ![](Texture/自身数据库还原3.png)
+
+#### 其它数据库还原
+
+1. 双击选择要还原的数据库，对着"备份"点击右键，选择"还原备份从..."。
+
+   ![](Texture/其它数据库还原1.png)
+
+2. 选择要还原的数据库备份文件，点击"打开"。
+
+   ![](Texture/其它数据库还原2.png)
+
+3. 在"对象选择"页下选择要还原的对象，然后点击"还原"。
+
+   ![](Texture/其它数据库还原3.png)
+
+4. 还原成功后，点击"关闭"即可。
+
+   ![](Texture/其它数据库还原4.png)
+
+## **使用Navicat进行数据库定时自动备份**
+
+1. 打开Navicat，选择"自动运行"，点击"新建批处理作业"。
+
+   ![](Texture/自动备份1.png)
+
+2. 在Navicat软件下方，左侧选择"备份"，点开中间数据库实例如"MySQL57"，选择要备份的数据库如"test"，双击右侧出现的"Backup test"，即完成了一个数据库的备份选择。如需同时备份多个数据库，请重复上述操作。数据库备份选择操作完成后，点击"保存"。
+
+   ![](Texture/自动备份2.png)
+
+3. 起个作业名。
+
+   ![](Texture/自动备份3.png)
+
+4. 选择"设置任务计划"。
+
+   ![](Texture/自动备份4.png)
+
+5. 选择"不管用户是否登录都要运行"，勾选"使用最高权限运行（需要以管理员身份运行）"。
+
+   ![](Texture/自动备份5.png)
+
+6. 选择"触发器"页，点击"新建"。
+
+   ![](Texture/自动备份6.png)
+
+7. 设置备份频率如"每天"、开始时间、每隔天数，点击"确定"。
+
+   ![](Texture/自动备份7.png)
+
+8. 点击"确定"，弹出窗口输入管理员密码，然后点击"确定"。
+
+   ![](Texture/自动备份8.png)
+
+9. 点击"开始"即可。
+
+   ![](Texture/自动备份9.png)
+
+10. 数据库备份的路径，保存在"C:\Users\Administrator\Documents\Navicat\MySQL\Servers\MySQL57"下面。
+
+    注：个人觉得，这个功能有些需要改进的地方。一是设置时应该可以选择保存路径，并且可以按设置自动删除旧的备份文件。二是支持后台任务，而不是一直要开着Navicat才行。
+
+## **事件（定时任务）**
+
+### 事件概述
+
+#### 事件简介
+
+事件（Event）是MySQL在相应的时刻调用的过程式数据库对象。一个事件可调用一次，也可周期性的启动，它由一个特定的线程来管理的，也就是所谓的"事件调度器"。
+
+#### 查看事件调度器是否开启
+
+```mysql
+#event_scheduler=ON表示开启
+SELECT @@event_scheduler;
+SHOW VARIABLES LIKE 'event_scheduler';
+```
+
+![](Texture/查看事件调度器是否开启.png)
+
+#### 开启事件调度器
+
+```mysql
+#方法一
+SET GLOBAL event_scheduler=1;
+#方法二
+SET GLOBAL event_scheduler=ON;
+#方法三
+在my.cnf中的[mysqld]部分，添加event_scheduler=ON然后重启MySQL。
+```
+
+注意：如果想要始终开启事件，那么在使用SET GLOBAL开启事件后，还需要在my.ini（Windows系统）/my.cnf（Linux系统）中添加event_scheduler=ON。因为如果没有添加，MySQL重启后事件又会回到原来的状态。
+
+#### 关闭事件调度器
+
+```mysql
+SET GLOBAL event_scheduler=OFF;
+```
+
+### 创建事件
+
+#### 创建语法
+
+在MySQL 5.1以上版本中，可以通过CREATE EVENT语句来创建事件。
+
+```mysql
+CREATE
+    [DEFINER={user | CURRENT_USER}]
+    EVENT [IF NOT EXISTS] event_name
+    ON SCHEDULE schedule
+    [ON COMPLETION [NOT] PRESERVE]
+    [ENABLE | DISABLE | DISABLE ON SLAVE]
+    [COMMENT 'comment']
+    DO event_body;
+```
+
+#### 创建语法关键词解释
+
+![](Texture/创建语法关键词解释.png)
+
+##### **ON SCHEDULE schedule**
+
+在ON SCHEDULE schedule子句中，参数schedule的值为一个AS子句，用于指定事件在某个时刻发生，其语法格式如下：
+
+```mysql
+AT timestamp [+ INTERVAL interval] ...
+  | EVERY interval
+    [STARTS timestamp [+ INTERVAL interval] ...]
+    [ENDS timestamp [+ INTERVAL interval] ...]
+```
+
+schedule参数说明：
+
+![](Texture/schedule参数说明.png)
+
+##### **interval** 
+
+interval参数值的语法格式如下：
+
+```mysql
+quantity {YEAR | QUARTER | MONTH | DAY | HOUR | MINUTE |
+              WEEK | SECOND | YEAR_MONTH | DAY_HOUR | DAY_MINUTE |
+              DAY_SECOND | HOUR_MINUTE | HOUR_SECOND | MINUTE_SECOND}
+```
+
+一些常用的时间间隔设置：
+
+<1>每隔5秒钟执行
+
+```mysql
+ON SCHEDULE EVERY 5 SECOND
+```
+
+<2>每隔1分钟执行
+
+```mysql
+ON SCHEDULE EVERY 1 MINUTE
+```
+
+<3>每天凌晨1点执行
+
+```mysql
+ON SCHEDULE EVERY 1 DAY STARTS DATE_ADD(DATE_ADD(CURDATE(), INTERVAL 1 DAY), INTERVAL 1 HOUR)
+```
+
+<4>每个月的第一天凌晨1点执行
+
+```mysql
+ON SCHEDULE EVERY 1 MONTH STARTS DATE_ADD(DATE_ADD(DATE_SUB(CURDATE(),INTERVAL DAY(CURDATE())-1 DAY),INTERVAL 1 MONTH),INTERVAL 1 HOUR)
+```
+
+<5>每3个月，从现在起一周后开始
+
+```mysql
+ON SCHEDULE EVERY 3 MONTH STARTS CURRENT_TIMESTAMP + 1 WEEK
+```
+
+<6>每12个小时，从现在起30分钟后开始，并于现在起四个星期后结束
+
+```mysql
+ON SCHEDULE EVERY 12 HOUR STARTS CURRENT_TIMESTAMP + INTERVAL 30 MINUTE ENDS CURRENT_TIMESTAMP + INTERVAL 4 WEEK
+```
+
+### 事件示例
+
+需求描述：每天22：30将TEST1数据库的EMP2表同步到TEST2数据库的EMP2表。
+
+1. 在TEST1数据库上创建存储过程
+
+   ```mysql
+   DROP PROCEDURE IF EXISTS CopyToTestEMP2;
+   
+   DELIMITER $$
+   CREATE procedure CopyToTestEMP2()
+   BEGIN
+   	  #如果表不存在，创建表
+   		CREATE TABLE IF NOT EXISTS mysql.TestStudy(
+   				id int,
+   				name VARCHAR(50),
+   				age int
+   		);
+   		TRUNCATE TABLE mysql.TestStudy;#删除表中所有行
+   		INSERT INTO mysql.TestStudy SELECT * FROM study_db.emp;
+   END$$
+   DELIMITER ;
+   ```
+
+2. 在TEST1数据库上创建事件
+
+   ```mysql
+   SET GLOBAL event_scheduler=ON;#启用事件调度器
+   
+   CREATE EVENT IF NOT EXISTS TestEmp2Event #创建事件
+   
+   ON SCHEDULE EVERY 1 DAY STARTS DATE_ADD(CURDATE(),INTERVAL 1350 MINUTE)#设置事件的执行时间和频率
+   ON COMPLETION PRESERVE ENABLE #设置事件的行为
+   COMMENT '将Study_Db数据库的EMP表同步到MySQL数据库的TestStudy表'
+   DO CALL CopyToTestEMP2();
+   ```
+
+   `ON SCHEDULE EVERY 1 DAY`：表示这个事件每 1 天 执行一次
+   `STARTS DATE_ADD(CURDATE(), INTERVAL 1350 MINUTE)`：表示事件的开始时间是当前日期（CURDATE()）加上 1350 分钟（即 22.5 小时）。这意味着事件将从当前时间的 22.5 小时后开始执行
+
+   `ON COMPLETION PRESERVE`：表示事件执行完成后 **保留** 该事件。即使事件执行完成，它仍然会存在并且可以继续按计划运行。
+
+   `ENABLE`：表示创建事件时事件是 **启用** 状态的。这样事件会立即开始按计划执行。
+
+   `COMMENT` 为事件添加一个描述，提供有关事件的额外信息。这有助于以后理解事件的作用和目的
+
+   `DO CALL CopyToTestEMP2();` 表示当事件被触发时，它将执行 `CopyToTestEMP2()` 存储过程
+
+### 查询事件
+
+```mysql
+SELECT * FROM information_schema.EVENTS;
+```
+
+### 修改事件
+
+在MySQL 5.1及以后版本中，事件被创建之后，还可以使用ALTER EVENT语句修改其定义和相关属性。其语法如下：
+
+```mysql
+ALTER
+    [DEFINER={user | CURRENT_USER}]
+    EVENT [IF NOT EXISTS] event_name
+    ON SCHEDULE schedule
+    [ON COMPLETION [NOT] PRESERVE]
+    [ENABLE | DISABLE | DISABLE ON SLAVE]
+    [COMMENT 'comment']
+    DO event_body;
+```
+
+可以看出，ALTER EVENT语句与CREATE EVENT语句基本相同。
+
+```mysql
+ALTER EVENT TestEmp2Event
+ON SCHEDULE EVERY 1 DAY STARTS DATE_ADD(CURDATE(),INTERVAL 1359 MINUTE)
+ON COMPLETION PRESERVE ENABLE
+COMMENT '将Study_Db数据库的EMP表同步到MySQL数据库的TestStudy表'
+DO CALL CopyToTestEMP2();
+```
+
+ALTER EVENT语句还有一个用法就是让一个事件关闭或者再次活动：
+
+```mysql
+#启动名称为TestEmp2Event的事件
+ALTER EVENT TestEmp2Event ENABLE;
+#关闭名称为TestEmp2Event的事件
+ALTER EVENT TestEmp2Event DISABLE;
+```
+
+### 删除事件
+
+在MySQL 5.1及以后版本中，删除已经创建的事件可以使用DROP EVENT语句来实现。
+
+```mysql
+DROP EVENT IF EXISTS TestEmp2Event;
+```
