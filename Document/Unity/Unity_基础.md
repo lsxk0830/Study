@@ -945,95 +945,100 @@ public class CreateAssetBundles //进行AssetBundle打包
 
 ##### 第一种 LoadFromMemory(LoadFromMemoryAsync)
 
-```
-IEnumerator Start(){
-  string path = "AssetBundles/wall.unity3d";
- 
-  AssetBundleCreateRequest request =AssetBundle.LoadFromMemoryAsync(File.ReadAllBytes(path));
- 
-  yield return request;
-  
-  AssetBundle ab = request.assetBundle;
-  
-  GameObject wallPrefab = ab.LoadAsset<GameObject>("Cube");
-  
-  Instantiate(wallPrefab);}
+```c#
+IEnumerator Start()
+{
+	string path = "AssetBundles/wall.unity3d";
+
+	AssetBundleCreateRequest request =AssetBundle.LoadFromMemoryAsync(File.ReadAllBytes(path));
+
+	yield return request;
+
+	AssetBundle ab = request.assetBundle;
+
+	GameObject wallPrefab = ab.LoadAsset<GameObject>("Cube");
+
+	Instantiate(wallPrefab);
+}
 ```
 
 ##### 第二种 LoadFromFile（LoadFromFileAsync）
 
-```
-IEnumerator Start(){
-string path = "AssetBundles/wall.unity3d";
- 
-  AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
- 
-  yield return request;
- 
-  AssetBundle ab = request.assetBundle;
- 
-  GameObject wallPrefab = ab.LoadAsset<GameObject>("Cube");
- 
-  Instantiate(wallPrefab);}
+```c#
+IEnumerator Start()
+{
+	string path = "AssetBundles/wall.unity3d";
+
+	AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(path);
+
+	yield return request;
+
+	AssetBundle ab = request.assetBundle;
+
+	GameObject wallPrefab = ab.LoadAsset<GameObject>("Cube");
+
+	Instantiate(wallPrefab);
+}
 ```
 
 ##### 第三种 UnityWebRequest
 
 ```c#
 private IEnumerator TestUnityWebRequest()
+{
+    //string uri = @"http://localhost/AssetBundles/cubewall.unity3d";
+    string path = Application.dataPath + "/5.AB打包/AB/cubesphere";
+    using (UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(path))
     {
-        //string uri = @"http://localhost/AssetBundles/cubewall.unity3d";
-        string path = Application.dataPath + "/5.AB打包/AB/cubesphere";
-        using (UnityWebRequest request = UnityWebRequestAssetBundle.GetAssetBundle(path))
+        yield return request.SendWebRequest();
+        if (request.result == UnityWebRequest.Result.Success) // 处理请求的结果
         {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.Success) // 处理请求的结果
-            {
-                AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request); // 获取 AssetBundle
-                GameObject wallPrefab = bundle.LoadAsset<GameObject>("CubeSphere_1");
-                wallPrefab.name = "UnityWebRequest";
-                Instantiate(wallPrefab);
-            }
-            else
-            {
-                Debug.LogError("未能下载AssetBundle,错误: " + request.error);
-            }
+            AssetBundle bundle = DownloadHandlerAssetBundle.GetContent(request); // 获取 AssetBundle
+            GameObject wallPrefab = bundle.LoadAsset<GameObject>("CubeSphere_1");
+            wallPrefab.name = "UnityWebRequest";
+            Instantiate(wallPrefab);
+        }
+        else
+        {
+            Debug.LogError("未能下载AssetBundle,错误: " + request.error);
         }
     }
+}
 ```
 
 ##### 第四种WWW（无依赖）
 
-```
+```c#
 private IEnumerator LoadNoDepandenceAsset()
+{
+    string path = "";
+
+    if (loadLocal)
     {
-        string path = "";
-        
-        if (loadLocal)
-        {
-#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        #if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
             path += "File:///";
-#endif
-#if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        #endif
+            #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
             path += "File://";
-#endif
+        #endif
             path += assetBundlePath + "/" + assetBundleName;
-            
-            //www对象
-            WWW www = new WWW(path);
- 
-            //等待下载【到内存】
-            yield return www;
- 
-            //获取到AssetBundle
-            AssetBundle bundle = www.assetBundle;
- 
-            //加载资源
-            GameObject prefab = bundle.LoadAsset<GameObject>(assetRealName);
- 
-            //Test:实例化
-            Instantiate(prefab);
-        }
+
+        //www对象
+        WWW www = new WWW(path);
+
+        //等待下载【到内存】
+        yield return www;
+
+        //获取到AssetBundle
+        AssetBundle bundle = www.assetBundle;
+
+        //加载资源
+        GameObject prefab = bundle.LoadAsset<GameObject>(assetRealName);
+
+        //Test:实例化
+        Instantiate(prefab);
+    }
+}
 ```
 
 ##### 第四种WWW（有依赖）
@@ -1184,8 +1189,6 @@ TCP协议全称是传输控制协议是一种面向连接的、可靠的、基�
    - 服务器收到结束包，发送ack包确认
    - 服务器发送完ack后如果没有数据则发送**FIN**（结束）包
    - 客户端收到服务器的 **FIN** 包后，回复一个 **ACK** 包，确认断开连接并等待一会。服务器收到连接关闭
-
-
 
 
 
@@ -1352,19 +1355,14 @@ Unity中导入的每张贴图都有一个启用可读可写（Read/Write Enabled
 #### UGUI中mask和rectmask2d是怎么实现遮罩的
 
 1. Mask会赋予Image一个特殊的材质，这个材质会给Image的每个像素点进行标记，将标记结果存放在一个缓存内（这个缓存叫做 **Stencil Buffer**）。当子级UI进行渲染的时候会去检查这个 Stencil Buffer内的标记，如果当前覆盖的区域存在标记（即该区域在Image的覆盖范围内），进行渲染，否则不渲染
-2. C#层：找出父物体中所有RectMask2D覆盖区域的交集（FindCullAndClipWorldRect）
-   C#层：所有继承MaskGraphic的子物体组件调用方法设置剪裁区域（SetClipRect）传递给Shader
-   Shader层：接收到矩形区域_ClipRect，片元着色器中判断像素是否在矩形区域内，不在则透明度设置为0（UnityGet2DClipping ）
-   Shader层：丢弃掉alpha小于0.001的元素（clip (color.a - 0.001)）内部用到的算法
+2. `RectMask2D` 通过计算当前物体的裁剪区域（即 `RectTransform` 的宽高）和物体的位置，将超出该区域的子物体进行裁剪。通过 **硬件加速的矩形裁剪** 来实现遮罩效果
 
 
 
 #### UGUI中如何让粒子特效在UI中实现排序，遮挡，裁剪等等
 
-1. Render Mode（渲染模式）：确保粒子系统的 Render Mode 设置为 World Space（世界空间）。这样可以将粒子特效从屏幕空间移动到世界空间，使其可以与UI元素进行更自由的交互。
-2. Sorting Layer 和 Order in Layer（排序层和排序顺序）：使用 Sorting Layer 和 Order in Layer 来调整粒子特效的渲染顺序。你可以将粒子特效设置在UI元素之上或之下，以实现遮挡和排序效果。在 Particle System 组件的 Renderer 模块中找到 Sorting Layer 和 Order in Layer 设置。
-3. 使用Canvas组件：如果你想要更细粒度地控制粒子特效与UI的交互，可以考虑将粒子特效嵌套在Canvas组件内。Canvas的 Render Mode 设置为 World Space，确保 Canvas 的 Sorting Layer 和 Order in Layer 设置适当，以影响其子对象（包括粒子特效）的渲染顺序。
-4. Camera设置：在使用世界空间的粒子特效时，你可能需要在场景中添加一个Camera用于渲染3D物体。这个Camera的设置可能需要调整，例如，确保它不会渲染到UI的Camera上，或者通过调整Culling Mask来限定它的渲染范围。
-5. 裁剪效果：如果希望粒子特效在UI元素内部进行裁剪，可以使用 RectMask2D 或者将粒子特效放在裁剪区域内的遮罩中。这可以通过在UI中创建相应的遮罩元素，然后将粒子特效放置在遮罩内来实现。
+在UGUI中实现粒子特效的排序、遮挡和裁剪，关键在于：
 
-
+1. 使用`Sorting Layer`和`Order in Layer`来控制粒子的渲染顺序。
+2. 通过调整`Render Mode`为`World Space`来将粒子放入UI的特定区域。
+3. 使用`Mask`或`RectMask2D`来裁剪粒子特效，确保它们只显示在指定区域内。
