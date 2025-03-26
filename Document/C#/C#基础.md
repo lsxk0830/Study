@@ -164,7 +164,7 @@ mInfo.Invoke(null,方法参数);
 |   **适用场景**   |              简单延时、逐帧动画              |    多线程计算、I/O 密集型任务（非 Unity 项目）    |      **Unity 高性能异步**（如高频 UI 更新、网络请求等）      |
 | **跨平台兼容性** |                   仅 Unity                   |                全平台（.NET 标准）                |                **全平台**（专为 Unity 优化）                 |
 
-### **总结与推荐**
+**总结与推荐**
 
 1. **协程 (Coroutine)**
    - ✅ 适合简单延时逻辑（如 `yield return new WaitForSeconds`）。
@@ -177,15 +177,13 @@ mInfo.Invoke(null,方法参数);
    - ✅ 适合高频网络请求、复杂异步流程、UI 交互。
    - ✅ 支持取消、超时、进度报告等高级功能。
 
-
-
-------
-
-### **最终结论**
+**最终结论**
 
 - **Unity 开发者**：优先使用 **UniTask**，替代协程和 `Task`。
 - **非 Unity 的 .NET 项目**：使用原生 `Task`。
 - **简单逻辑或兼容旧代码**：保留协程。
+
+
 
 #### Net与 Mono 的关系
 
@@ -202,41 +200,16 @@ Mono为.Net提供集成开发环境，集成并实现了.NET的编译器、CLR �
 
 
 
-#### String类型比 stringBuilder 类型的优势是什么?
+#### String、StringBuilder、StringBuffer
 
-- String主要用于公共 API，通用性好、用途广泛、读取性能高、占用内存小。
-
-- StringBuilder主要用于拼接 String，修改性能好。
-
-- 不过现在的编译器已经把String的 + 操作优化成 StringBuilder 了， 所以一般用String 就可以了
-
-- String是不可变的，所以天然线程同步。
-
-- StringBuilder可变，非线程同步
-
-
-
-#### 函数 Func(string a, string b)用 Lambda 表达式怎么写?
-
-(a,b) => {};
-
-
-
-#### 数列1,1,2,3,5,8,13…第 n 位数是多少?用 C#递归算法实现
-
-```c#
-public int CountNumber(int num)
-{
-	if (num == 1 || num == 2)
-	{
-		return 1;
-	}
-    else
-    {
-		return CountNumber(num -1) + CountNumber(num-2);
-	}
-  }
-```
+|   **特性**   |         **String**         |   **StringBuilder**    |      **StringBuffer**      |
+| :----------: | :------------------------: | :--------------------: | :------------------------: |
+|  **可变性**  |   ❌ 不可变（Immutable）    |   ✔️ 可变（Mutable）    |     ✔️ 可变（Mutable）      |
+| **线程安全** |     ✔️（天然线程安全）      |      ❌ 非线程安全      |   ✔️ 线程安全（同步方法）   |
+|   **性能**   | ⚠️ 低（频繁操作产生新对象） |   ✔️ 高（无同步开销）   |   ⚠️ 中（同步锁降低性能）   |
+| **使用场景** |    常量字符串、少量操作    | 单线程下频繁字符串操作 |   多线程下频繁字符串操作   |
+| **内存效率** | ❌ 低（大量拼接时浪费内存） |    ✔️ 高（原地修改）    |      ✔️ 高（原地修改）      |
+| **方法同步** |          无需同步          |         无同步         | 方法用 `synchronized` 修饰 |
 
 
 
