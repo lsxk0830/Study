@@ -58,8 +58,7 @@ static void ValueTypeDemo()
     Console.WriteLine(v2.x);     // 显示 "5"
 }
  ```
-
-<img src="../../Texture/C#Plus/ClassStruct.jpg"  />
+![输入图片说明](../../Texture/C#Plus/ClassStruct.jpg)
 
 图解代码执行时的内存分配情况  
 
