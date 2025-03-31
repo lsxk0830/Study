@@ -1,6 +1,5 @@
 - 常用插件推荐
-  - [UniTask]https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask
-  - [HotReload]https://gitlab.hotreload.net/root/hot-reload-releases.git#1.13.0
+  - [[UniTask]](https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask)
 - 文档
   - C#
     - [C#基础](Document/C#/C#基础.md)

@@ -14,3 +14,4 @@
 *.csproj
 /Unity3D/Library
 /Unity3D/Temp
+/Unity3D/Logs
