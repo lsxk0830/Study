@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Tool
+namespace Unity3D.Demo.ObjectPool
 {
     /// <summary>
     /// 对象池先拿后放，拿时添加标记，放时根据标记判断能否放

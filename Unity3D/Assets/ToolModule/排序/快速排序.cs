@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Tool
+namespace Unity3D.Demo.Sort
 {
     /// <summary>
     /// 【实现逻辑】

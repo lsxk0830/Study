@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Test
+namespace Unity3D.Demo.AutoSort
 {
     public class UserSortUtility : IComparer<Comparer_UserInfo>
     {

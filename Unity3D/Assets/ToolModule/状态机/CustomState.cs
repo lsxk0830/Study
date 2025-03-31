@@ -1,6 +1,6 @@
 using System;
 
-namespace Tool
+namespace Unity3D.Demo.StateMachine
 {
     public class CustomState : IState
     {

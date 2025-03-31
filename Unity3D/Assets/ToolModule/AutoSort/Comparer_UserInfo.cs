@@ -1,4 +1,4 @@
-namespace Test
+namespace Unity3D.Demo.AutoSort
 {
     public class Comparer_UserInfo
     {

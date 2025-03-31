@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Test
+namespace Unity3D.Demo.AutoSort
 {
     /// <summary>
     /// IComparable<T> 用于在类内部定义对象的默认比较行为,适用于对象的内部排序逻辑

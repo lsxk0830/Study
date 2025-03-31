@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Tool
+namespace Unity3D.Demo.StateMachine
 {
     public class FSM<T>
     {

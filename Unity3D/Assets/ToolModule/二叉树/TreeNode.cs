@@ -1,11 +1,14 @@
-public class TreeNode
+namespace Unity3D.Demo.BinaryTree
 {
-    public int value;
-    public TreeNode leftChild;
-    public TreeNode rightChild;
-
-    public TreeNode(int v)
+    public class TreeNode
     {
-        value = v;
+        public int value;
+        public TreeNode leftChild;
+        public TreeNode rightChild;
+
+        public TreeNode(int v)
+        {
+            value = v;
+        }
     }
 }

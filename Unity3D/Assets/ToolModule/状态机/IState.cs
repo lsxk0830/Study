@@ -1,4 +1,4 @@
-namespace Tool
+namespace Unity3D.Demo.StateMachine
 {
     public interface IState
     {

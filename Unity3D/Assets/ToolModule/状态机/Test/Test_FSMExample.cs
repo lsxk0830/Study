@@ -1,7 +1,6 @@
-using Tool;
 using UnityEngine;
 
-namespace Test
+namespace Unity3D.Demo.StateMachine
 {
     public class Test_FSMExample : MonoBehaviour
     {

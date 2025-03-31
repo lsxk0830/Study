@@ -1,7 +1,6 @@
-using Tool;
 using UnityEngine;
 
-namespace Test
+namespace Unity3D.Demo.ObjectPool
 {
     public class GoPoolTest : MonoBehaviour
     {
