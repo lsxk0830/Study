@@ -12,3 +12,5 @@
 
 *.sln
 *.csproj
+/Unity3D/Library
+/Unity3D/Temp
