@@ -223,17 +223,21 @@ Mono为.Net提供集成开发环境，集成并实现了.NET的编译器、CLR �
 | [Dictionary<key,value>](./C# 进阶/Dictionary.md) |      哈希表      |   Key唯一    |    无序    |     Key      |         添加/查找/删除：平均O(1)         |         键值对快速查找         | 需良好哈希函数，冲突影响性能 |
 |        [HashSet<T>](./C# 进阶/HashSet.md)        |      哈希表      |      ❌       |    无序    |     元素     |         添加/查找/删除：平均O(1)         | 快速判断元素是否存在，去重操作 |        无法按索引访问        |
 |          [Queue<T>](./C# 进阶/Queue.md)          |     循环数组     |      ✅       |  FIFO顺序  |  队首/队尾   |             入队/出队：O(1)              | 先进先出任务处理（如消息队列） |          非线程安全          |
-|          [Stack<T>](./C# 进阶/Stack.md)          |       数组       |      ✅       |  LIFO顺序  |     栈顶     |             压栈/弹栈：O(1)              |   后进先出操作（如撤销功能）   |        容量不足时扩容        |
-|                  LinkedList<T>                   |     双向链表     |      ✅       |  插入顺序  |   节点指针   |     插入/删除：O(1)（已知节点位置）      |    频繁在任意位置插入/删除     |      随机访问慢（O(n)）      |
-|                      Array                       |   固定长度数组   |      ✅       |  索引顺序  |     索引     |  随机访问：O(1)；插入/删除：需重建数组   |    固定大小集合，高性能场景    |          长度不可变          |
+|                     Stack<T>                     |       数组       |      ✅       |  LIFO顺序  |     栈顶     |             压栈/弹栈：O(1)              |   后进先出操作（如撤销功能）   |        容量不足时扩容        |
+|     [LinkedList<T>](./C# 进阶/LinkedList.md)     |     双向链表     |      ✅       |  插入顺序  |   节点指针   |     插入/删除：O(1)（已知节点位置）      |    频繁在任意位置插入/删除     |      随机访问慢（O(n)）      |
+|           [Array](./C# 进阶/Array.md)            |   固定长度数组   |      ✅       |  索引顺序  |     索引     |  随机访问：O(1)；插入/删除：需重建数组   |    固定大小集合，高性能场景    |          长度不可变          |
 
 性能排序
 
 - 插入性能： LinkedList > Dictionary > HashTable > List
-
 - 遍历性能：List > LinkedList > Dictionary > HashTable
-
 - 删除性能： Dictionary > LinkedList > HashTable > List
+
+1. **Stack**：底层是数组，先进后出。
+2. **Queue**：循环数组，头尾指针，先进先出，扩容是2倍或加4的较大值
+3. **Dictionary**：数组+单链表的哈希表，扩容用最小素数，Entry和Bucket数组对应。负载因子 > 0.72
+4. **HashSet**：类似Dictionary，但Entry没有key，只存value。
+5. **List**：动态数组，自动扩容。
 
 
 
