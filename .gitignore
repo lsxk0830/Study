@@ -1,6 +1,10 @@
-/C\#/.vs
-/C\#/bin
-/C\#/obj
+/C\#/LeetCode/.vs
+/C\#/LeetCode/bin
+/C\#/LeetCode/obj
+
+/C\#/CLRViaCSharp/Code/.vs
+/C\#/CLRViaCSharp/Code/bin
+/C\#/CLRViaCSharp/Code/obj
 
 /Unity/.vs
 /Unity/.vscode
