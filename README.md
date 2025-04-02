@@ -5,13 +5,13 @@
     - [设计模式](Document/C#/设计模式.md)
     - [数据结构](Document/C#/数据结构.md)
   - 进阶
-    - [Dictionary](Document/C#/C# 进阶/Dictionary.md)
-    - [HashSet](Document/C#/C# 进阶/HashSet.md)
-    - [List](Document/C#/C# 进阶/List.md)
-    - [LinkedList](Document/C#/C# 进阶/LinkedList.md)
-    - [Queue](Document/C#/C# 进阶/Queue.md)
-    - [Struct&Class](Document/C#/C# 进阶/Struct&Class.md)
-    - [SharedMemory](Document/C#/C# 进阶/SharedMemory.md)
+    - [Dictionary](Document/C#/C#进阶/Dictionary.md)
+    - [HashSet](Document/C#/C#进阶/HashSet.md)
+    - [List](Document/C#/C#进阶/List.md)
+    - [LinkedList](Document/C#/C#进阶/LinkedList.md)
+    - [Queue](Document/C#/C#进阶/Queue.md)
+    - [Struct&Class](Document/C#/C#进阶/Struct&Class.md)
+    - [SharedMemory](Document/C#/C#进阶/SharedMemory.md)
 - Unity
   - 基础
     - [基础知识](Document/Unity/Unity基础知识.md)
