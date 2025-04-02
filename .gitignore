@@ -1,6 +1,3 @@
-*.sln
-*.csproj
-
 /C\#/.vs
 /C\#/bin
 /C\#/obj
