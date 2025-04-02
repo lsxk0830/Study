@@ -1,12 +1,10 @@
-﻿using EverydayLeetCode;
-using System;
-using System.Text;
+﻿using System.Text;
 
 namespace LeetCode
 {
     #region 解决思路
     /*
-     * i == 4 || i == 9 特殊处理
+     * 预定义符号表和贪心算法
      */
     #endregion
 

@@ -1,6 +1,4 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace EverydayLeetCode
+﻿namespace LeetCode
 {
     #region 解决思路
     /*

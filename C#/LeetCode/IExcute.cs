@@ -1,4 +1,4 @@
-﻿namespace EverydayLeetCode
+﻿namespace LeetCode
 {
     interface IExcute
     {

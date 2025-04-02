@@ -1,6 +1,4 @@
-﻿//using EverydayLeetCode;
-
-//namespace LeetCode
+﻿//namespace LeetCode
 //{
 //    #region 解决思路
 //    /*

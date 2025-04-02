@@ -1,6 +1,6 @@
 ﻿using LeetCode;
 
-namespace EverydayLeetCode
+namespace LeetCode
 {
     internal class Program
     {

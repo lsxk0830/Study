@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EverydayLeetCode
+namespace LeetCode
 {
     #region 解决思路
     /*

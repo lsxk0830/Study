@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EverydayLeetCode
+namespace LeetCode
 {
     /// <summary>
     /// 无重复字符的最长子串

@@ -1,4 +1,4 @@
-﻿namespace EverydayLeetCode
+﻿namespace LeetCode
 {
     /// <summary>
     /// 1. 两数之和

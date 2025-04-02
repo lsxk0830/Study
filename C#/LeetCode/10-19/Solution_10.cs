@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace EverydayLeetCode
+namespace LeetCode
 {
     #region 解决思路
     /*

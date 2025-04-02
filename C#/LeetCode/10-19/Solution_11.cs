@@ -1,4 +1,4 @@
-﻿namespace EverydayLeetCode
+﻿namespace LeetCode
 {
     #region 解决思路
     /*
