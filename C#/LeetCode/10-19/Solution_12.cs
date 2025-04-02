@@ -1,4 +1,6 @@
 ﻿using EverydayLeetCode;
+using System;
+using System.Text;
 
 namespace LeetCode
 {
@@ -16,78 +18,56 @@ namespace LeetCode
     {
         public void Excute()
         {
-            int num = 1994;
+            int num = 10;
             string s = IntToRoman(num);
             Console.WriteLine($"整数转罗马数字：{s}");
         }
 
         public string IntToRoman(int num)
         {
-            List<string> list = new List<string>();
-            int shi = 0; int zhi = 0;
+            StringBuilder stringBuilder = new StringBuilder();
+            // 四类情况
             while (num > 0)
             {
-                int i = num % 10;
-                if (shi != 0)
-                    zhi = (int)Math.Pow(10, shi) * i;
-                else
-                    zhi = i;
-                if (i == 4 || i == 9)
+                if (num >= 1000)
                 {
-                    list.Add(Other(zhi));
+                    num -= General(num,1000, stringBuilder);
+                }
+                else if (num >= 100)
+                {
+                    num -= General(num, 100, stringBuilder);
+                }
+                else if (num >= 10)
+                {
+                    num -= General(num, 10, stringBuilder);
                 }
                 else
                 {
-                    if (i < 5)
-                    {
-                        string result = "";
-                        if (zhi < 10)
-                        {
-                            result = new string(Change(1), i);
-                        }
-                        else if (zhi < 100)
-                        {
-                            result = new string(Change(10), i);
-                        }
-                        else if (zhi < 1000)
-                        {
-                            result = new string(Change(100), i);
-                        }
-                        else if (zhi < 10000)
-                        {
-                            result = new string(Change(1000), i);
-                        }
-                        list.Add(result);
-                    }
-                    else
-                    {
-                        i -= 5;
-                        string result = "";
-                        if (zhi < 10)
-                        {
-                            result = Change(5) + new string(Change(1), i);
-                        }
-                        else if (zhi < 100)
-                        {
-                            result += Change(50) + new string(Change(10), i);
-                        }
-                        else if (zhi < 1000)
-                        {
-                            result += Change(500) + new string(Change(100), i);
-                        }
-                        else if (zhi < 10000)
-                        {
-                            result += Change(5000) + new string(Change(1000), i);
-                        }
-                        list.Add(result);
-                    }
+                    num -= General(num, 1, stringBuilder);
                 }
-                num /= 10;
-                shi++;
             }
-            list.Reverse();
-            string res = string.Join("", list);
-            return res;
+            return stringBuilder.ToString();
+        }
+
+        private int General(int num,int s, StringBuilder stringBuilder)
+        {
+            int i = num / s;
+            if (i == 4 || i == 9)
+                stringBuilder.Append(Other(i * s));
+            else if (i < 5)
+            {
+                stringBuilder.Append(new string(Change(s), i));
+            }
+            else if (i == 5)
+            {
+                stringBuilder.Append(Change(5*s));
+            }
+            else
+            {
+                stringBuilder.Append(Change(5*s));
+                stringBuilder.Append(new string(Change(s), i - 5));
+            }
+            return i * s;
         }
 
         private char Change(int s)
