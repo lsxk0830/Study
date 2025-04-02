@@ -10,6 +10,26 @@ showStatusBar = false
 scopes = {
 }
 providers = {
+	find = {
+		active = true
+		priority = 25
+		defaultAction = null
+	}
+	adb = {
+		active = false
+		priority = 2500
+		defaultAction = null
+	}
+	store = {
+		active = true
+		priority = 100
+		defaultAction = null
+	}
+	packages = {
+		active = true
+		priority = 90
+		defaultAction = null
+	}
 	log = {
 		active = false
 		priority = 210
@@ -18,26 +38,6 @@ providers = {
 	performance = {
 		active = false
 		priority = 100
-		defaultAction = null
-	}
-	adb = {
-		active = false
-		priority = 2500
-		defaultAction = null
-	}
-	packages = {
-		active = true
-		priority = 90
-		defaultAction = null
-	}
-	asset = {
-		active = true
-		priority = 25
-		defaultAction = null
-	}
-	find = {
-		active = true
-		priority = 25
 		defaultAction = null
 	}
 	profilermarkers = {
@@ -50,9 +50,9 @@ providers = {
 		priority = 50
 		defaultAction = null
 	}
-	store = {
+	asset = {
 		active = true
-		priority = 100
+		priority = 25
 		defaultAction = null
 	}
 	presets_provider = {
