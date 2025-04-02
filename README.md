@@ -17,22 +17,44 @@
     - [进阶_TextMeshPro](Document/进阶_TextMeshPro.md)
     - [进阶_合批](Document/进阶_合批.md)
   - 数据库
-    - [数据库](DataBase/MySQL.md)
-- 书籍
-  - [Unity 3D高级编程-主程手记](Document/书籍_Unity 3D高级编程-主程手记)
-  - [Unity Shader入门精要](Document/书籍_Unity Shader入门精要)
-  - [Unity VR虚拟现实完全自学教程](Document/书籍_Unity VR虚拟现实完全自学教程)
-  - [Unity 人工智能实战](Document/书籍_Unity 人工智能实战)
-  - [Unity 游戏程序优化设计实战](Document/书籍_Unity 游戏程序优化设计实战)
-  - [Unity3D游戏开发](Document/书籍_Unity3D游戏开发)
-  - [Unity网络游戏实战](Document/书籍_Unity网络游戏实战)
-  - [Unity引擎HDRP高清渲染管线实战](Document/书籍_Unity引擎HDRP高清渲染管线实战)
-  - [百万在线---大型游戏服务端开发](Document/书籍_百万在线---大型游戏服务端开发)
-  - [代码整洁之道CleanCode](Document/书籍_代码整洁之道CleanCode)
-  - [多人在线游戏架构实践](Document/书籍_多人在线游戏架构实践)
-  - [计算机程序设计艺术](Document/书籍_计算机程序设计艺术)
-  - [性能优化](Document/书籍_性能优化)
-  - [游戏服务器架构与优化](Document/书籍_游戏服务器架构与优化)
-  - [游戏引擎架构](Document/书籍_游戏引擎架构)
-  - [重构 改善既有代码的设计](Document/书籍_重构 改善既有代码的设计)
+
+
+
+```mermaid
+graph LR
+       A[运行时引擎架构] 
+       A --> B[游戏循环]
+       A --> C[渲染系统]
+   
+       B --> B1[处理输入]
+       B --> B2[更新游戏逻辑]
+   
+       C --> C1[渲染管道]
+       C --> C2[着色器]
+   
+       D --> D1[碰撞检测]
+       D --> D2[刚体动力学]
+   
+       E --> E1[音频文件加载]
+       E --> E2[音频解码]
+   
+       F --> F1[键盘输入]
+       F --> F2[鼠标输入]
+       F --> F3[手柄输入]
+   
+       G --> G1[加载资源]
+       G --> G2[管理资源]
+       G --> G3[释放资源]
+   
+       H --> H1[内存池]
+       H --> H2[对象池]
+       H --> H3[自定义分配器]
+   
+       I --> I1[任务分配]
+       I --> I2[多CPU核心]
+   
+       J --> J1[性能检测]
+       J --> J2[内存泄漏检测]
+       J --> J3[问题调试]
+```
 

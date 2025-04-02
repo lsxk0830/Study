@@ -1,18 +1,16 @@
-/Unity/UserSettings/
-/Unity/[Ll]ibrary/
-/Unity/[Ll]ogs/
-/Unity/[Oo]bj/
-/Unity/[Tt]emp/
-/Unity/Assets/TextMesh Pro/
-/Unity/Assets/TextMesh Pro.meta
+*.sln
+*.csproj
+
+/C\#/.vs
+/C\#/bin
+/C\#/obj
 
 /Unity/.vs
 /Unity/.vscode
 /Unity/.vsconfig
-
-*.sln
-*.csproj
 /Unity3D/Library
 /Unity3D/Temp
 /Unity3D/Logs
-/Unity3D/.vscode
+/Unity/Obj
+
+
