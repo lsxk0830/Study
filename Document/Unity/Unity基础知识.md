@@ -1,4 +1,4 @@
-#### .Image和RawImage的区别
+#### Image和RawImage的区别
 
 - Imgae比RawImage更消耗性能
 

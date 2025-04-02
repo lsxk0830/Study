@@ -1,60 +1,56 @@
-- 常用插件推荐
-  - [[UniTask]](https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask)
-- 文档
-  - C#
-    - [C#基础](Document/C#/C#基础.md)
-    - [C#进阶_字典原理实现](Document/C#/C# 进阶/字典实现原理.md)
-    - [C#进阶_结构体&类](Document/C#/C# 进阶/结构体&类.md)
+- C#
+  - 基础
+    - [C#基础基础](Document/C#/C#基础知识.md)
     - [排序](Document/C#/排序.md)
     - [设计模式](Document/C#/设计模式.md)
     - [数据结构](Document/C#/数据结构.md)
-    - [网络同步](Document/C#/网络同步.md)
-  - Lua
-    - [Lua](Document/Lua/Lua.md)
-  - Unity
-    - [基础_面试](Document/基础_面试.md)
-    - [基础_优化](Document/基础_优化.md)
-    - [进阶_TextMeshPro](Document/进阶_TextMeshPro.md)
-    - [进阶_合批](Document/进阶_合批.md)
-  - 数据库
-
-
+  - 进阶
+    - [Dictionary](Document/C#/C# 进阶/Dictionary.md)
+    - [HashSet](Document/C#/C# 进阶/HashSet.md)
+    - [List](Document/C#/C# 进阶/List.md)
+    - [LinkedList](Document/C#/C# 进阶/LinkedList.md)
+    - [Queue](Document/C#/C# 进阶/Queue.md)
+    - [Struct&Class](Document/C#/C# 进阶/Struct&Class.md)
+    - [SharedMemory](Document/C#/C# 进阶/SharedMemory.md)
+- Unity
+  - 基础
+    - [基础知识](Document/Unity/Unity基础知识.md)
+    - [基础优化](Document/Unity/Unity基础优化.md)
+    - [Unity组件](Document/Unity/Unity组件.md)
+    - [疑问](Document/Unity/疑问.md)
+  - 进阶
+    - [合批](Document/进阶/合批.md)
+    - [TextMeshPro](Document/Unity/进阶/TextMeshPro.md)
 
 ```mermaid
-graph LR
-       A[运行时引擎架构] 
-       A --> B[游戏循环]
-       A --> C[渲染系统]
-   
-       B --> B1[处理输入]
-       B --> B2[更新游戏逻辑]
-   
-       C --> C1[渲染管道]
-       C --> C2[着色器]
-   
-       D --> D1[碰撞检测]
-       D --> D2[刚体动力学]
-   
-       E --> E1[音频文件加载]
-       E --> E2[音频解码]
-   
-       F --> F1[键盘输入]
-       F --> F2[鼠标输入]
-       F --> F3[手柄输入]
-   
-       G --> G1[加载资源]
-       G --> G2[管理资源]
-       G --> G3[释放资源]
-   
-       H --> H1[内存池]
-       H --> H2[对象池]
-       H --> H3[自定义分配器]
-   
-       I --> I1[任务分配]
-       I --> I2[多CPU核心]
-   
-       J --> J1[性能检测]
-       J --> J2[内存泄漏检测]
-       J --> J3[问题调试]
+graph TD
+       A[Study] 
+       A --> B[C#]
+       A --> C[Unity]
+       
+       B --> B1[C#基础]
+       B --> B2[C#进阶]
+       
+       C --> C1[Unity基础]
+       C --> C2[Unity进阶]
+       
+       B1 --> B11[C#基础知识]
+       B1 --> B12[排序]
+       B1 --> B13[设计模式]
+       B1 --> B14[数据结构]
+       
+       B2 --> B21[Dictionary]
+       B2 --> B22[HashSet]
+       B2 --> B23[List]
+       B2 --> B24[LinkedList]
+       B2 --> B25[Queue]
+       B2 --> B26[Struct_Class]
+       
+       C1 --> C11[基础知识]
+       C1 --> C12[基础优化]
+       C1 --> C13[组件]
+       C1 --> C14[疑问]
+       
+       C2 --> C21[合批]
+       C2 --> C22[TextMeshPro]
 ```
-
