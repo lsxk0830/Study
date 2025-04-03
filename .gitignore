@@ -15,3 +15,4 @@
 /Unity3D/Obj
 
 *.csproj
+/Unity3D/UserSettings
