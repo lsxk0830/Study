@@ -1,0 +1,17 @@
+ManifestFileVersion: 0
+UnityVersion: 2023.2.20f1c1
+CRC: 2783954252
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: unity3d.demo.ab.cube
+      Dependencies: {}
+    Info_1:
+      Name: unity3d.demo.ab.sphere.go
+      Dependencies: {}
+    Info_2:
+      Name: unity3d.demo.ab.texture
+      Dependencies: {}
+    Info_3:
+      Name: unity3d.demo.ab.group.go
+      Dependencies: {}

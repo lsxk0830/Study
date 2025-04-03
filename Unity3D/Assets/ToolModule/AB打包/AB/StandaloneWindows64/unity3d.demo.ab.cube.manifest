@@ -1,0 +1,35 @@
+ManifestFileVersion: 0
+UnityVersion: 2023.2.20f1c1
+CRC: 259982374
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: a1185a021b06805fe987965696c2bfd3
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 13997707dd9bcd80d489212ad1b522eb
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: a88136ed7b3878adb676b98a6265b352
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- "Assets/ToolModule/AB\u6253\u5305/Test/Cube.prefab"
+Dependencies: []

@@ -6,7 +6,7 @@ using UnityEditor;
 
 namespace Unity3D.Base.ScriptableObjectExample
 {
-    [CreateAssetMenu(fileName = "AssetMenu创建的资源", menuName = "创建ScriptableObject", order = 1)]
+    [CreateAssetMenu(fileName = "AssetMenu创建的资源", menuName = "Unity3D.Demo/创建ScriptableObject", order = 1)]
     public class ScriptableObjectExample : ScriptableObject
     {
         [SerializeField]
@@ -19,7 +19,9 @@ namespace Unity3D.Base.ScriptableObjectExample
             public string name;
         }
 
-        [MenuItem("Unity3D.Base/Create ScriptableObject")]
+#if UNITY_EDITOR
+        [MenuItem("Unity3D.Demo/ScriptableObject/创建ScriptableObject")]
+
         static void CreateScriptableObject()
         {
             //创建ScriptableObject
@@ -37,5 +39,6 @@ namespace Unity3D.Base.ScriptableObjectExample
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
+#endif
     }
 }

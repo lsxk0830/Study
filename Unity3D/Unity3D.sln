@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.EditorCoroutines.Edit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.ScriptableBuildPipeline", "Unity.ScriptableBuildPipeline.csproj", "{03A397E4-6FD0-AA9B-4A60-293123272A29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{CCA76E42-E9D5-4CBF-3222-F488C499DCF3}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.CollabProxy.Editor", "Unity.CollabProxy.Editor.csproj", "{990E4147-4850-493C-8EE0-E7411BDBACB0}"
 EndProject
 Global
@@ -165,6 +167,10 @@ Global
 		{03A397E4-6FD0-AA9B-4A60-293123272A29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03A397E4-6FD0-AA9B-4A60-293123272A29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03A397E4-6FD0-AA9B-4A60-293123272A29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCA76E42-E9D5-4CBF-3222-F488C499DCF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCA76E42-E9D5-4CBF-3222-F488C499DCF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCA76E42-E9D5-4CBF-3222-F488C499DCF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCA76E42-E9D5-4CBF-3222-F488C499DCF3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{990E4147-4850-493C-8EE0-E7411BDBACB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{990E4147-4850-493C-8EE0-E7411BDBACB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{990E4147-4850-493C-8EE0-E7411BDBACB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
