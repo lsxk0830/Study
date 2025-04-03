@@ -6,7 +6,7 @@ namespace LeetCode
     {
         private static void Main(string[] args)
         {
-            IExcute solution = new Solution_12();
+            IExcute solution = new Solution_13();
             solution.Excute();
         }
     }
