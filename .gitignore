@@ -6,12 +6,12 @@
 /C\#/CLRViaCSharp/Code/bin
 /C\#/CLRViaCSharp/Code/obj
 
-/Unity/.vs
-/Unity/.vscode
-/Unity/.vsconfig
+/Unity3D/.vs
+/Unity3D/.vscode
+/Unity3D/.vsconfig
 /Unity3D/Library
 /Unity3D/Temp
 /Unity3D/Logs
-/Unity/Obj
+/Unity3D/Obj
 
-
+*.csproj

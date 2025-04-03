@@ -36,7 +36,7 @@ namespace LeetCode
             {
                 int length = pair.Symbol.Length;
 
-                while(index<s.Length)
+                while (index < s.Length)
                 {
                     if (length == 1)
                     {
@@ -60,7 +60,7 @@ namespace LeetCode
                     }
                     else
                         break;
-                } 
+                }
             }
             return total;
         }
