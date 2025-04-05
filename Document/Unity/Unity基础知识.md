@@ -1,3 +1,9 @@
+### 生命周期
+
+![](..\Texture\Unity\Unity生命周期.svg)
+
+
+
 #### Image和RawImage的区别
 
 - Imgae比RawImage更消耗性能
