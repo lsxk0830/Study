@@ -177,5 +177,16 @@ Signed(/ saɪnd 有符号的) Distance Field(/ fiːld 场、地).有向距离场
 
 启动User Sprite Mesh后，将使用Sprite自身形状的三角片来渲染UI(Image Type为Simple)
 
-如果使用两个三角形拼成的矩形片，当UI大面积是透明的时候，会白白的浪费渲染性能；而使用Sprite自身形状的三角片来渲染UI虽然增加了顶点的数量，但是能提升UI的填充效率。Image支持Sprite Mesh的另一个前提是Sprite必须支持Mesh Type，Mesh Type = Tight
+如果使用两个三角形拼成的矩形片，当UI大面积是透明的时候，会白白的浪费渲染性能；而使用Sprite自身形状的三角片来渲染UI虽然增加了顶点的数量，但是能提升UI的填充效率。Image支持Sprite Mesh的另一个前提是Sprite必须支持Mesh Type，Mesh Type = Tight（紧密的）
 
+Image组件只能显示Sprite,原因是Sprite在Texture的基础上又记录了一层额外的信息，比如Sprite与Altas(图集)之间的引用关系，Mesh Type保存为Tight模式等。可以使用Altas减少Draw Call,配合Sprite Mesh可以优化渲染填充率。
+
+------
+
+RawImage
+
+RawImage只能显示Texture,虽然RawImage也可以使用Sprite,但它其实使用的是Sprite对应的Texture文件。
+
+<img src="..\Texture\Unity\013.png"  align="left" style="zoom: 80%;" />
+
+UV Rect可以指定UV的矩形区域，这样可以只显示图片的一部分或者平铺图片。如果图片较大又需要裁剪，使用UV Rect从性能的角度来说要比使用Mask高效很多，但UV Rect只能设置单独的一张图，而Mask可以将整个节点下单所有贴图都裁剪。
