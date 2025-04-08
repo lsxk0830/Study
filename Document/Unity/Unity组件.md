@@ -163,3 +163,19 @@ Signed(/ saɪnd 有符号的) Distance Field(/ fiːld 场、地).有向距离场
 ##### 图文混排
 
 - 鼠标选中图片精灵--->Create--->TextMeshPro--->SpriteAsset，创建SpriteAsset文件。
+- 将Sprite Asset拖入TextMeshPro中
+- <img src="..\Texture\Unity\012.png"  align="left" style="zoom: 33%;" />
+- 直接输入“图文<sprite name=EmojiOne_0>混排”
+- <img src="..\Texture\Unity\011.png"  align="left" style="zoom: 80%;" />
+- 图片位置奇怪原因是精灵的锚点对齐方式和文本不同。打开Sprite编辑器，修改Sprite的对齐方式，删除原来的SpriteAsset，创建新的
+
+------
+
+##### Image
+
+默认情况下Image是由两个三角面拼成一个矩形片来渲染。
+
+启动User Sprite Mesh后，将使用Sprite自身形状的三角片来渲染UI(Image Type为Simple)
+
+如果使用两个三角形拼成的矩形片，当UI大面积是透明的时候，会白白的浪费渲染性能；而使用Sprite自身形状的三角片来渲染UI虽然增加了顶点的数量，但是能提升UI的填充效率。Image支持Sprite Mesh的另一个前提是Sprite必须支持Mesh Type，Mesh Type = Tight
+
