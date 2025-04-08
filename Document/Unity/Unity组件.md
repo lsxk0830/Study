@@ -158,3 +158,8 @@ Signed(/ saɪnd 有符号的) Distance Field(/ fiːld 场、地).有向距离场
 
   <img src="..\Texture\Unity\010.png"  align="left" style="zoom: 80%;" />
 
+------
+
+##### 图文混排
+
+- 鼠标选中图片精灵--->Create--->TextMeshPro--->SpriteAsset，创建SpriteAsset文件。
