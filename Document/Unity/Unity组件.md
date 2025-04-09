@@ -190,3 +190,18 @@ RawImage只能显示Texture,虽然RawImage也可以使用Sprite,但它其实使�
 <img src="..\Texture\Unity\013.png"  align="left" style="zoom: 80%;" />
 
 UV Rect可以指定UV的矩形区域，这样可以只显示图片的一部分或者平铺图片。如果图片较大又需要裁剪，使用UV Rect从性能的角度来说要比使用Mask高效很多，但UV Rect只能设置单独的一张图，而Mask可以将整个节点下单所有贴图都裁剪。
+
+------
+
+##### Scroll View
+
+<img src="..\Texture\Unity\014.png"  align="left" style="zoom: 80%;" />
+
+原理：使用Scroll Rect(滚动矩形)组件设置一个滚动区域，然后绑定Scrollbar(滚动条)组件来监听滚动事件
+
+------
+
+##### Aspect(外观) Ratio(比例) Fitter(n适配器)组件
+
+<img src="..\Texture\Unity\015.png"  align="left" style="zoom: 80%;" />
+
