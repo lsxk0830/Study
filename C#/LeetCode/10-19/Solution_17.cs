@@ -1,8 +1,11 @@
-﻿namespace LeetCode
+﻿using System.Text;
+
+namespace LeetCode
 {
     #region 解决思路
     /*
      * 每次处理两轮数字的交叉结果。然后与下一轮进行交叉。
+     * 以“234”为例，先将'2'与‘3’的结果缓存起来，在于‘4’组合
      */
     #endregion
 
@@ -28,36 +31,29 @@
             if (string.IsNullOrEmpty(digits)) return new List<string>();
 
             // 定义数字到字母的映射字典
-            var digitToLetters = new Dictionary<char, string> 
+            var dic = new Dictionary<char, string> 
             {
                 {'2', "abc"}, {'3', "def"},  {'4', "ghi"}, {'5', "jkl"},
                 {'6', "mno"}, {'7', "pqrs"}, {'8', "tuv"}, {'9', "wxyz"}
             };
-
-            // 初始化结果列表，包含一个空字符串（用于首次拼接）
-            List<string> result = new List<string> { "" };
-
-            // 遍历输入字符串中的每个数字
+            IList<string> result = new List<string>();
+            StringBuilder sb = new StringBuilder(); // 使用StringBuilder减少字符拼接产生的内存
             foreach (char digit in digits)
-            {
-                // 获取当前数字对应的字母集合（例如 '2' 对应 "abc"）
-                var letters = digitToLetters[digit];
-
-                // 临时列表存储当前轮次生成的新组合
-                List<string> temp = new List<string>();
-
-                // 遍历当前结果中的每一个已有组合
-                foreach (string s in result)
+            { 
+                var str = dic[digit];
+                //将上一轮的结果与当前数字的字母进行交叉组合。第一次没有结果，所以需要初始化一个空字符串
+                IList<string> temp = result.Count == 0 ? new List<string>() { "" } : new List<string>(result);
+                result.Clear();
+                for (int i = 0; i < str.Length; i++)
                 {
-                    // 遍历当前数字对应的每个字母
-                    foreach (char c in letters)
+                    for (int j = 0; j < temp.Count; j++)
                     {
-                        // 将已有组合与当前字母拼接，生成新组合
-                        temp.Add(s + c);
+                        sb.Append(temp[j]);
+                        sb.Append(str[i]);
+                        result.Add(sb.ToString());
+                        sb.Clear();
                     }
                 }
-                // 用新生成的组合替换旧结果，进入下一轮迭代
-                result = temp;
             }
             return result;
         }

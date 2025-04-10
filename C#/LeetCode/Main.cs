@@ -4,7 +4,7 @@
     {
         private static void Main(string[] args)
         {
-            IExcute solution = new Solution_17();
+            IExcute solution = new Solution_18();
             solution.Excute();
         }
     }
